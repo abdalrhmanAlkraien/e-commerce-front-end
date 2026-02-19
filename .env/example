@@ -1,0 +1,35 @@
+# Backend API
+NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
+
+# App Config
+NEXT_PUBLIC_APP_NAME=Factory Management System
+NEXT_PUBLIC_DEFAULT_LOCALE=en
+
+# Optional: Analytics, Monitoring, etc.
+# NEXT_PUBLIC_SENTRY_DSN=
+# NEXT_PUBLIC_GOOGLE_ANALYTICS_ID=
+```
+
+---
+
+## Summary
+
+With these files, you have:
+
+1. **Complete backend integration** through axios with auto-refresh tokens
+2. **Type-safe API layer** with TypeScript matching your Spring Boot DTOs
+3. **React Query hooks** for caching and automatic refetching
+4. **Zustand store** for global client state
+5. **Comprehensive documentation** Claude can reference every session
+6. **Clear patterns** for forms, validation, error handling, and i18n
+
+**Next steps with Claude Code:**
+```
+Read all files in /docs and .claude/CLAUDE.md
+
+We're building the inventory module. Start by creating:
+1. The inventory page at app/(dashboard)/inventory/page.tsx
+2. Use the useRawMaterials hook we defined
+3. Display materials in a responsive grid
+4. Add search and filter by status
+5. Follow all coding standards and mobile-first design

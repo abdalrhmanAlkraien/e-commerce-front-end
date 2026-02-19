@@ -1,0 +1,3482 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "E-Commerce API",
+    "description": "E-Commerce Platform APIs - Complete backend for managing products, orders, payments, and users",
+    "contact": {
+      "name": "Engineering Team",
+      "email": "engineering@company.com"
+    },
+    "license": {
+      "name": "Proprietary",
+      "url": "https://company.com/license"
+    },
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local Development"
+    },
+    {
+      "url": "https://dev-api.example.com",
+      "description": "Development Environment"
+    },
+    {
+      "url": "https://api.example.com",
+      "description": "Production"
+    }
+  ],
+  "security": [
+    {
+      "Bearer Authentication": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Public Products",
+      "description": "Public product catalog endpoints"
+    },
+    {
+      "name": "Admin Products",
+      "description": "Product management endpoints (ADMIN only)"
+    },
+    {
+      "name": "Authentication",
+      "description": "User registration and login endpoints"
+    },
+    {
+      "name": "Checkout",
+      "description": "Order creation from cart"
+    },
+    {
+      "name": "Admin Categories",
+      "description": "Category management endpoints (ADMIN only)"
+    },
+    {
+      "name": "Content Management",
+      "description": "APIs for file upload and download using AWS S3"
+    },
+    {
+      "name": "Admin - Orders",
+      "description": "Admin order management endpoints"
+    },
+    {
+      "name": "Refund Requests",
+      "description": "Customer refund request operations"
+    },
+    {
+      "name": "Admin",
+      "description": "Admin-only endpoints (requires ROLE_ADMIN)"
+    },
+    {
+      "name": "Public Cart",
+      "description": "Shopping cart operations for anonymous and authenticated users"
+    },
+    {
+      "name": "Admin Customers",
+      "description": "Customer management endpoints (ADMIN only)"
+    },
+    {
+      "name": "Public Categories",
+      "description": "Public category browsing endpoints"
+    }
+  ],
+  "paths": {
+    "/api/v1/public/cart/{cartId}/items/{itemId}": {
+      "put": {
+        "tags": [
+          "Public Cart"
+        ],
+        "summary": "Update cart item",
+        "description": "Update item quantity. Validates stock availability.",
+        "operationId": "updateItem",
+        "parameters": [
+          {
+            "name": "cartId",
+            "in": "path",
+            "description": "Cart ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "itemId",
+            "in": "path",
+            "description": "Cart item ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-SESSION-ID",
+            "in": "header",
+            "description": "Session ID for anonymous carts",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCartItemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "409": {
+            "description": "Cart already checked out",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cart or item not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or insufficient stock",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Item updated successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied to this cart",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Public Cart"
+        ],
+        "summary": "Remove cart item",
+        "description": "Remove item from cart.",
+        "operationId": "removeItem",
+        "parameters": [
+          {
+            "name": "cartId",
+            "in": "path",
+            "description": "Cart ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "itemId",
+            "in": "path",
+            "description": "Cart item ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-SESSION-ID",
+            "in": "header",
+            "description": "Session ID for anonymous carts",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "409": {
+            "description": "Cart already checked out"
+          },
+          "404": {
+            "description": "Cart or item not found"
+          },
+          "204": {
+            "description": "Item removed successfully"
+          },
+          "403": {
+            "description": "Access denied to this cart"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/products/{id}": {
+      "get": {
+        "tags": [
+          "Admin Products"
+        ],
+        "summary": "Get product by ID",
+        "description": "Get detailed product information (ADMIN only)",
+        "operationId": "getProductById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Product ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized (requires ADMIN role)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Product retrieved successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Admin Products"
+        ],
+        "summary": "Update product",
+        "description": "Update an existing product (ADMIN only)",
+        "operationId": "updateProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Product ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Product updated successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product or category not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Product slug already exists",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized (requires ADMIN role)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Admin Products"
+        ],
+        "summary": "Delete product",
+        "description": "Delete a product (ADMIN only)",
+        "operationId": "deleteProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Product ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Product deleted successfully"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "404": {
+            "description": "Product not found"
+          },
+          "403": {
+            "description": "Not authorized (requires ADMIN role)"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/orders/{externalId}/status": {
+      "put": {
+        "tags": [
+          "Admin - Orders"
+        ],
+        "summary": "Change order status",
+        "description": "Change order status with lifecycle validation. Valid transitions are enforced by state machine. Example valid transitions: NEW→PAYMENT_PENDING, PAID→SHIPPED, SHIPPED→COMPLETED. Invalid transitions will return 400 Bad Request.",
+        "operationId": "changeStatus",
+        "parameters": [
+          {
+            "name": "externalId",
+            "in": "path",
+            "description": "Order external ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "ORD-20260207-0001"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeOrderStatusRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "404": {
+            "description": "Order not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangeOrderStatusResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status transition",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangeOrderStatusResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Status changed successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangeOrderStatusResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/customers/{id}/enable": {
+      "put": {
+        "tags": [
+          "Admin Customers"
+        ],
+        "summary": "Enable customer",
+        "description": "Enable a customer account (ADMIN only)",
+        "operationId": "enableCustomer",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Customer ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Customer enabled successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Customer not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized (requires ADMIN role)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/customers/{id}/disable": {
+      "put": {
+        "tags": [
+          "Admin Customers"
+        ],
+        "summary": "Disable customer",
+        "description": "Disable a customer account (ADMIN only)",
+        "operationId": "disableCustomer",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Customer ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Customer not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Customer disabled successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized (requires ADMIN role)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/categories/{id}": {
+      "get": {
+        "tags": [
+          "Admin Categories"
+        ],
+        "summary": "Get category by ID",
+        "description": "Get detailed category information (ADMIN only)",
+        "operationId": "getCategoryById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Category ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Category retrieved successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Category not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized (requires ADMIN role)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Admin Categories"
+        ],
+        "summary": "Update category",
+        "description": "Update an existing category (ADMIN only)",
+        "operationId": "updateCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Category ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Category updated successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Category not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Category name or slug already exists",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized (requires ADMIN role)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Admin Categories"
+        ],
+        "summary": "Delete category",
+        "description": "Delete a category (ADMIN only)",
+        "operationId": "deleteCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Category ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Category not found"
+          },
+          "409": {
+            "description": "Cannot delete category with associated products"
+          },
+          "204": {
+            "description": "Category deleted successfully"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not authorized (requires ADMIN role)"
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/v1/public/orders/{externalId}/refund-request": {
+      "post": {
+        "tags": [
+          "Refund Requests"
+        ],
+        "summary": "Create refund request",
+        "description": "Submit a refund request for an order. Request will be in PENDING status and requires admin approval before processing. Validates that order has been paid and requested amount does not exceed remaining refundable amount.",
+        "operationId": "createRefundRequest",
+        "parameters": [
+          {
+            "name": "externalId",
+            "in": "path",
+            "description": "Order external ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "ORD-20260207-0001"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefundRequestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "404": {
+            "description": "Order not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefundRequestResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Refund request created successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefundRequestResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Order not paid or invalid refund amount",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefundRequestResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/public/cart": {
+      "post": {
+        "tags": [
+          "Public Cart"
+        ],
+        "summary": "Create cart",
+        "description": "Create new shopping cart. Returns sessionId for anonymous users.",
+        "operationId": "createCart",
+        "responses": {
+          "201": {
+            "description": "Cart created successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/public/cart/{cartId}/items": {
+      "post": {
+        "tags": [
+          "Public Cart"
+        ],
+        "summary": "Add item to cart",
+        "description": "Add product to cart. Validates stock and product status.",
+        "operationId": "addItem",
+        "parameters": [
+          {
+            "name": "cartId",
+            "in": "path",
+            "description": "Cart ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-SESSION-ID",
+            "in": "header",
+            "description": "Session ID for anonymous carts",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCartItemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "409": {
+            "description": "Cart already checked out",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or insufficient stock",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cart or product not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Item added successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied to this cart",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content/upload": {
+      "post": {
+        "tags": [
+          "Content Management"
+        ],
+        "summary": "Upload a file",
+        "description": "Upload a file to AWS S3 and receive metadata including access URL. Supports images, PDFs, and documents. Maximum file size: 10MB.",
+        "operationId": "uploadFile",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "file"
+                ],
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "File to upload",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Invalid file or upload failed",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentUploadResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentUploadResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "File uploaded successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentUploadResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/checkout/create-order": {
+      "post": {
+        "tags": [
+          "Checkout"
+        ],
+        "summary": "Create order from cart",
+        "description": "Create order from existing cart. Validates stock, calculates totals, and generates order. Requires X-SESSION-ID header for anonymous carts.",
+        "operationId": "createOrder",
+        "parameters": [
+          {
+            "name": "X-SESSION-ID",
+            "in": "header",
+            "description": "Session ID for anonymous carts",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "404": {
+            "description": "Cart or product not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateOrderResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Cart is empty or validation failed",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateOrderResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Cart already checked out or insufficient stock",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateOrderResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Order created successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateOrderResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied to cart",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateOrderResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Register new user",
+        "description": "Create a new user account with CUSTOMER role. Email must be unique. Password is hashed before storage. Returns JWT token for immediate authentication.",
+        "operationId": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "409": {
+            "description": "Email already exists",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "User registered successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input data (validation error)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "User login",
+        "description": "Authenticate user with email and password. Returns JWT token that must be included in Authorization header as 'Bearer \u003Ctoken\u003E' for accessing protected endpoints.",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "400": {
+            "description": "Invalid input data (validation error)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/products": {
+      "get": {
+        "tags": [
+          "Admin Products"
+        ],
+        "summary": "List products",
+        "description": "Get paginated list of products with filters (ADMIN only)",
+        "operationId": "listProducts",
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "query",
+            "description": "Filter by category ID",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "categorySlug",
+            "in": "query",
+            "description": "Filter by category slug",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "active",
+            "in": "query",
+            "description": "Filter by active status",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "minPrice",
+            "in": "query",
+            "description": "Filter by minimum price",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "maxPrice",
+            "in": "query",
+            "description": "Filter by maximum price",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Search by product name or slug",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageProductResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Products retrieved successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageProductResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized (requires ADMIN role)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageProductResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Admin Products"
+        ],
+        "summary": "Create product",
+        "description": "Create a new product (ADMIN only)",
+        "operationId": "createProduct",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "404": {
+            "description": "Category not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Product created successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Product slug already exists",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized (requires ADMIN role)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/orders/{externalId}/refund": {
+      "post": {
+        "tags": [
+          "Admin - Orders"
+        ],
+        "summary": "Execute refund",
+        "description": "Execute a refund for an order through the payment gateway. Validates refund amount against available refundable amount. Updates order status to REFUNDED if fully refunded. Updates linked RefundRequest status to PROCESSED if successful.",
+        "operationId": "executeRefund",
+        "parameters": [
+          {
+            "name": "externalId",
+            "in": "path",
+            "description": "Order external ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "ORD-20260207-0001"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteRefundRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Refund executed successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecuteRefundResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecuteRefundResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid refund request (amount exceeds refundable, order not paid, etc.)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecuteRefundResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Payment gateway error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecuteRefundResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/categories": {
+      "get": {
+        "tags": [
+          "Admin Categories"
+        ],
+        "summary": "List categories",
+        "description": "Get paginated list of categories with filters (ADMIN only)",
+        "operationId": "listCategories",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Filter by name (partial match, case-insensitive)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "slug",
+            "in": "query",
+            "description": "Filter by slug (exact match)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categories retrieved successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageCategoryResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageCategoryResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized (requires ADMIN role)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageCategoryResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Admin Categories"
+        ],
+        "summary": "Create category",
+        "description": "Create a new product category (ADMIN only)",
+        "operationId": "createCategory",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "409": {
+            "description": "Category name or slug already exists",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized (requires ADMIN role)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Category created successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/v1/public/products": {
+      "get": {
+        "tags": [
+          "Public Products"
+        ],
+        "summary": "List products",
+        "description": "Get paginated list of active products with optional filtering",
+        "operationId": "listProducts_1",
+        "parameters": [
+          {
+            "name": "categorySlug",
+            "in": "query",
+            "description": "Filter by category slug",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "minPrice",
+            "in": "query",
+            "description": "Filter by minimum price",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "maxPrice",
+            "in": "query",
+            "description": "Filter by maximum price",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Search by product name or slug",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Products retrieved successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageProductResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/public/products/{slug}": {
+      "get": {
+        "tags": [
+          "Public Products"
+        ],
+        "summary": "Get product by slug",
+        "description": "Get detailed product information by slug",
+        "operationId": "getProductBySlug",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Product slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Product not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Product retrieved successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/public/categories": {
+      "get": {
+        "tags": [
+          "Public Categories"
+        ],
+        "summary": "List categories",
+        "description": "Get paginated list of categories with optional filtering",
+        "operationId": "listCategories_1",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Filter by name (partial match, case-insensitive)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "slug",
+            "in": "query",
+            "description": "Filter by slug (exact match)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categories retrieved successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageCategoryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/public/cart/{cartId}": {
+      "get": {
+        "tags": [
+          "Public Cart"
+        ],
+        "summary": "Get cart",
+        "description": "Get cart details. Requires X-SESSION-ID header for anonymous carts.",
+        "operationId": "getCart",
+        "parameters": [
+          {
+            "name": "cartId",
+            "in": "path",
+            "description": "Cart ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-SESSION-ID",
+            "in": "header",
+            "description": "Session ID for anonymous carts",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Cart not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Cart retrieved successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied to this cart",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content/{id}": {
+      "get": {
+        "tags": [
+          "Content Management"
+        ],
+        "summary": "Download a file",
+        "description": "Download a file from AWS S3 by its ID. File is streamed directly without loading into memory.",
+        "operationId": "downloadFile",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Content ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Content not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "File downloaded successfully",
+            "content": {
+              "application/octet-stream": {
+
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/orders": {
+      "get": {
+        "tags": [
+          "Admin - Orders"
+        ],
+        "summary": "List orders",
+        "description": "List orders with optional filtering and pagination",
+        "operationId": "list",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter by order status",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "NEW",
+                "PAYMENT_PENDING",
+                "PAID",
+                "SHIPPED",
+                "COMPLETED",
+                "CANCELLED",
+                "FAILED",
+                "REFUNDED"
+              ]
+            }
+          },
+          {
+            "name": "customerEmail",
+            "in": "query",
+            "description": "Filter by customer email (partial match)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dateFrom",
+            "in": "query",
+            "description": "Filter by minimum creation date (ISO-8601 format)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "dateTo",
+            "in": "query",
+            "description": "Filter by maximum creation date (ISO-8601 format)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "minTotal",
+            "in": "query",
+            "description": "Filter by minimum total amount",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "maxTotal",
+            "in": "query",
+            "description": "Filter by maximum total amount",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageOrderSummaryResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/orders/{externalId}": {
+      "get": {
+        "tags": [
+          "Admin - Orders"
+        ],
+        "summary": "Get order by external ID",
+        "description": "Retrieve detailed order information including items",
+        "operationId": "getByExternalId",
+        "parameters": [
+          {
+            "name": "externalId",
+            "in": "path",
+            "description": "External order ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDetailsResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/customers": {
+      "get": {
+        "tags": [
+          "Admin Customers"
+        ],
+        "summary": "List customers",
+        "description": "Get paginated list of customers with filters (ADMIN only)",
+        "operationId": "listCustomers",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "Filter by email (partial match)",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Search by full name or email",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "enabled",
+            "in": "query",
+            "description": "Filter by enabled status",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Pageable"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageCustomerResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Customers retrieved successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageCustomerResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized (requires ADMIN role)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageCustomerResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/customers/{id}": {
+      "get": {
+        "tags": [
+          "Admin Customers"
+        ],
+        "summary": "Get customer by ID",
+        "description": "Get detailed customer information (ADMIN only)",
+        "operationId": "getCustomerById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Customer ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Customer not found",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerResponse"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Customer retrieved successfully",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized (requires ADMIN role)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomerResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    },
+    "/api/v1/admin/_health": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Admin health check",
+        "description": "Test endpoint for verifying admin authorization. Requires ADMIN role. Returns 403 for CUSTOMER role and 401 for unauthenticated.",
+        "operationId": "adminHealth",
+        "responses": {
+          "403": {
+            "description": "Forbidden (CUSTOMER role)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Access granted (ADMIN role)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized (no token)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer Authentication": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UpdateCartItemRequest": {
+        "required": [
+          "quantity"
+        ],
+        "type": "object",
+        "properties": {
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "description": "Update item request"
+      },
+      "CartItemResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "productName": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unitPrice": {
+            "type": "number"
+          },
+          "lineTotal": {
+            "type": "number"
+          }
+        }
+      },
+      "CartResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "CHECKED_OUT"
+            ]
+          },
+          "totalPrice": {
+            "type": "number"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CartItemResponse"
+            }
+          }
+        }
+      },
+      "ProductUpdateRequest": {
+        "required": [
+          "active",
+          "categoryId",
+          "currency",
+          "name",
+          "price",
+          "slug",
+          "stock"
+        ],
+        "type": "object",
+        "properties": {
+          "categoryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "slug": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "type": "number"
+          },
+          "currency": {
+            "maxLength": 3,
+            "minLength": 0,
+            "type": "string"
+          },
+          "stock": {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "imageUrl": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          }
+        }
+      },
+      "CategorySummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          }
+        }
+      },
+      "ProductResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "category": {
+            "$ref": "#/components/schemas/CategorySummary"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "stock": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ChangeOrderStatusRequest": {
+        "required": [
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "PAYMENT_PENDING",
+              "PAID",
+              "SHIPPED",
+              "COMPLETED",
+              "CANCELLED",
+              "FAILED",
+              "REFUNDED"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "description": "Status change request"
+      },
+      "ChangeOrderStatusResponse": {
+        "type": "object",
+        "properties": {
+          "externalId": {
+            "type": "string"
+          },
+          "previousStatus": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "PAYMENT_PENDING",
+              "PAID",
+              "SHIPPED",
+              "COMPLETED",
+              "CANCELLED",
+              "FAILED",
+              "REFUNDED"
+            ]
+          },
+          "currentStatus": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "PAYMENT_PENDING",
+              "PAID",
+              "SHIPPED",
+              "COMPLETED",
+              "CANCELLED",
+              "FAILED",
+              "REFUNDED"
+            ]
+          },
+          "changedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "changedBy": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "CustomerResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "CUSTOMER"
+            ]
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CategoryUpdateRequest": {
+        "required": [
+          "name",
+          "slug"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "slug": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          }
+        }
+      },
+      "CategoryResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "RefundRequestRequest": {
+        "required": [
+          "amount",
+          "reason"
+        ],
+        "type": "object",
+        "properties": {
+          "amount": {
+            "minimum": 0.01,
+            "exclusiveMinimum": false,
+            "type": "number"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "description": "Refund request details"
+      },
+      "RefundRequestResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "orderId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "orderExternalId": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "APPROVED",
+              "REJECTED",
+              "PROCESSED"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AddCartItemRequest": {
+        "required": [
+          "productId",
+          "quantity"
+        ],
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "description": "Add item request"
+      },
+      "ContentUploadResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CreateOrderRequest": {
+        "required": [
+          "cartId",
+          "customerEmail",
+          "customerName"
+        ],
+        "type": "object",
+        "properties": {
+          "cartId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "customerName": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "customerEmail": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "customerPhone": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string"
+          },
+          "shippingAddressValues": {
+            "$ref": "#/components/schemas/ShippingAddressValues"
+          }
+        },
+        "description": "Create order request"
+      },
+      "ShippingAddressValues": {
+        "type": "object",
+        "properties": {
+          "street": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateOrderResponse": {
+        "type": "object",
+        "properties": {
+          "externalId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "PAYMENT_PENDING",
+              "PAID",
+              "SHIPPED",
+              "COMPLETED",
+              "CANCELLED",
+              "FAILED",
+              "REFUNDED"
+            ]
+          },
+          "totalAmount": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderItemResponse"
+            }
+          }
+        }
+      },
+      "OrderItemResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "productId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "productName": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unitPrice": {
+            "type": "number"
+          },
+          "lineTotal": {
+            "type": "number"
+          }
+        }
+      },
+      "RegisterRequest": {
+        "required": [
+          "email",
+          "firstName",
+          "lastName",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "lastName": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "email": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 2147483647,
+            "minLength": 8,
+            "type": "string"
+          }
+        }
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "tokenType": {
+            "type": "string"
+          },
+          "expiresInSeconds": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserDto"
+          }
+        }
+      },
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "CUSTOMER"
+            ]
+          }
+        }
+      },
+      "LoginRequest": {
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "ProductCreateRequest": {
+        "required": [
+          "active",
+          "categoryId",
+          "name",
+          "price",
+          "slug",
+          "stock"
+        ],
+        "type": "object",
+        "properties": {
+          "categoryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "slug": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "minimum": 0,
+            "exclusiveMinimum": false,
+            "type": "number"
+          },
+          "currency": {
+            "maxLength": 3,
+            "minLength": 0,
+            "type": "string"
+          },
+          "stock": {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "imageUrl": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          }
+        }
+      },
+      "ExecuteRefundRequest": {
+        "required": [
+          "amount"
+        ],
+        "type": "object",
+        "properties": {
+          "amount": {
+            "minimum": 0.01,
+            "exclusiveMinimum": false,
+            "type": "number"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "refundRequestId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "description": "Refund execution request"
+      },
+      "ExecuteRefundResponse": {
+        "type": "object",
+        "properties": {
+          "externalId": {
+            "type": "string"
+          },
+          "refundAmount": {
+            "type": "number"
+          },
+          "totalRefundedAmount": {
+            "type": "number"
+          },
+          "remainingRefundableAmount": {
+            "type": "number"
+          },
+          "orderStatus": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "PAYMENT_PENDING",
+              "PAID",
+              "SHIPPED",
+              "COMPLETED",
+              "CANCELLED",
+              "FAILED",
+              "REFUNDED"
+            ]
+          },
+          "providerRefundId": {
+            "type": "string"
+          },
+          "executedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fullRefund": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CategoryCreateRequest": {
+        "required": [
+          "name",
+          "slug"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "slug": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          }
+        }
+      },
+      "Pageable": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "minimum": 1,
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "PageProductResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductResponse"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageableObject": {
+        "type": "object",
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "unpaged": {
+            "type": "boolean"
+          },
+          "paged": {
+            "type": "boolean"
+          },
+          "pageNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "SortObject": {
+        "type": "object",
+        "properties": {
+          "empty": {
+            "type": "boolean"
+          },
+          "sorted": {
+            "type": "boolean"
+          },
+          "unsorted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PageCategoryResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryResponse"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OrderSummaryResponse": {
+        "type": "object",
+        "properties": {
+          "externalId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "PAYMENT_PENDING",
+              "PAID",
+              "SHIPPED",
+              "COMPLETED",
+              "CANCELLED",
+              "FAILED",
+              "REFUNDED"
+            ]
+          },
+          "customerEmail": {
+            "type": "string"
+          },
+          "customerName": {
+            "type": "string"
+          },
+          "totalAmount": {
+            "type": "number"
+          },
+          "paidAmount": {
+            "type": "number"
+          },
+          "refundedAmount": {
+            "type": "number"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PageOrderSummaryResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderSummaryResponse"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      },
+      "OrderDetailsResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "externalId": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "customerName": {
+            "type": "string"
+          },
+          "customerEmail": {
+            "type": "string"
+          },
+          "customerPhone": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NEW",
+              "PAYMENT_PENDING",
+              "PAID",
+              "SHIPPED",
+              "COMPLETED",
+              "CANCELLED",
+              "FAILED",
+              "REFUNDED"
+            ]
+          },
+          "totalAmount": {
+            "type": "number"
+          },
+          "paidAmount": {
+            "type": "number"
+          },
+          "refundedAmount": {
+            "type": "number"
+          },
+          "paymentProvider": {
+            "type": "string",
+            "enum": [
+              "STRIPE",
+              "CASH",
+              "PAYPAL"
+            ]
+          },
+          "paymentRef": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderItemResponse"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PageCustomerResponse": {
+        "type": "object",
+        "properties": {
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "first": {
+            "type": "boolean"
+          },
+          "last": {
+            "type": "boolean"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CustomerResponse"
+            }
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sort": {
+            "$ref": "#/components/schemas/SortObject"
+          },
+          "numberOfElements": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageable": {
+            "$ref": "#/components/schemas/PageableObject"
+          },
+          "empty": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "Bearer Authentication": {
+        "type": "http",
+        "description": "Enter JWT Bearer token",
+        "name": "Bearer Authentication",
+        "in": "header",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
