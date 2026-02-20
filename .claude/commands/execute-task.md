@@ -23,7 +23,7 @@ Step 9: Handle User Choice → Take action
 
 ### Step 1: Identify Next Task
 
-1. Read `.claude/tasks/systemTasks.md`
+1. Read `task/systemTasks.md`
 2. Find first task with status ⏳ PENDING
 3. Display to user:
 ```

@@ -40,6 +40,37 @@ apiClient.interceptors.request.use((config) => {
 
   return config;
 });
+
+5. Update response interceptor to handle unwrapped responses:
+    - Backend returns data directly (no StandardApiResponse wrapper)
+    - Access response data as: response.data
+    - For paginated responses: response.data will be Page<T>
+    - For single items: response.data will be the item itself
+    - For arrays: response.data will be the array
+
+Example response handling:
+```typescript
+apiClient.interceptors.response.use(
+  (response) => {
+    // Data is already unwrapped, just return it
+    return response;
+  },
+  async (error) => {
+    if (error.response?.status === 401) {
+      const authStore = useAuthStore.getState();
+      authStore.clearToken(); // Clear token
+      // Keep sessionId intact
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+6. Add note about response format:
+   - No need to unwrap response.data.data
+   - Backend returns: response.data = actual data
+   - Error responses have: { message, timestamp, errors? }
 ```
 
 Test cases:

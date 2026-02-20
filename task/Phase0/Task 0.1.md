@@ -23,3 +23,4 @@ Create a new Next.js 14 project with TypeScript and the following configuration:
 
 4. Verify all dependencies installed correctly
 5. Run dev server to confirm setup: npm run dev
+6. Application location /Users/aboodalkraien/project/e-commerce-front-end/frontend
