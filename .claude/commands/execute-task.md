@@ -1,6 +1,6 @@
-# Execute Single Task - Interactive Mode
+# Execute Single Task - Interactive Mode with Automated Testing
 
-Execute the next pending task and wait for user review before proceeding.
+Execute the next pending task, generate test scenarios, run tests, and wait for user review before proceeding.
 
 ---
 
@@ -8,10 +8,13 @@ Execute the next pending task and wait for user review before proceeding.
 ```
 Step 1: Identify Next Task → User confirms
 Step 2: Read & Display Task → User confirms
-Step 3: Execute Task → Track progress
-Step 4: Present Results → Show everything
-Step 5: User Review & Decision → Wait for choice
-Step 6: Handle User Choice → Take action
+Step 3: Execute Implementation → Track progress
+Step 4: Generate Test Scenarios ✨ NEW
+Step 5: Execute Tests ✨ NEW
+Step 6: Record Test Results ✨ NEW
+Step 7: Present Results → Show everything
+Step 8: User Review & Decision → Wait for choice
+Step 9: Handle User Choice → Take action
 ```
 
 ---
@@ -84,7 +87,7 @@ Proceed with execution? (yes/no/read-full)
 
 ---
 
-### Step 3: Execute Task
+### Step 3: Execute Implementation
 
 If user confirms:
 
@@ -106,35 +109,288 @@ If user confirms:
 4. **Follow the complete requirements from `/task/PhaseX/Task X.Y.md`:**
    - Execute each requirement step by step
    - Create all files listed in "Expected Outputs"
-   - Run all tests from "Test Criteria"
-   - Verify outputs match specifications
+   - Follow all specifications exactly
 
 5. **Show progress updates:**
 ```
+⚙️  IMPLEMENTATION - Task X.Y
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ⚙️  Step 1/4: Creating project structure...
     ✓ Created directories
     ✓ Initialized configuration
+    
 ⚙️  Step 2/4: Installing dependencies...
     ✓ Installed @tanstack/react-query
     ✓ Installed zustand
     ✓ Installed axios
+    
 ⚙️  Step 3/4: Configuring tools...
     ✓ shadcn/ui initialized
-⚙️  Step 4/4: Running verification tests...
-    ✓ All tests passed
+    
+⚙️  Step 4/4: Creating components...
+    ✓ LoginForm.tsx created
+    ✓ All files generated
+
+✅ IMPLEMENTATION COMPLETE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ---
 
-### Step 4: Present Results
+### Step 4: Generate Test Scenarios ✨ NEW
 
-After completion, display comprehensive results:
+After implementation completes, automatically generate test scenarios:
+```
+🧪 GENERATING TEST SCENARIOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Reading task definition: /task/PhaseX/Task X.Y.md
+
+Extracting test requirements:
+  ✓ Identified 5 test scenarios from acceptance criteria
+  ✓ Found edge cases to test
+  ✓ Extracted validation requirements
+  ✓ Noted regression checks needed
+
+Generating test file: /task/TestX/Task X.Y.md
+
+Test scenarios generated:
+  1. [Primary Functionality] - Main success path
+  2. [Error Handling] - Invalid inputs
+  3. [Form Validation] - Client-side validation
+  4. [Integration] - API interaction
+  5. [Regression] - Previous features still work
+
+✓ Test file created: /task/TestX/Task X.Y.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Proceeding to test execution...
+```
+
+**What happens:**
+1. Read task definition file
+2. Extract acceptance criteria and requirements
+3. Generate test scenarios based on:
+   - Expected outputs
+   - Test criteria from task definition
+   - Common patterns for this type of task
+   - Edge cases and error conditions
+4. Create `/task/TestX/Task X.Y.md` with:
+   - Test setup instructions
+   - Playwright test code for each scenario
+   - Validation checks
+   - Inspection points
+   - Success criteria
+
+---
+
+### Step 5: Execute Tests ✨ NEW
+
+Run all generated test scenarios using Playwright (via Computer Use):
+```
+🧪 EXECUTING TESTS - Task X.Y
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Test File: /task/TestX/Task X.Y.md
+Total Scenarios: 5
+Browser: Chromium (Playwright)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[1/5] Scenario 1: Login Page Loads Successfully
+      Status: 🔄 Running...
+      ✓ Navigate to http://localhost:3000/login
+      ✓ Page loaded successfully (245ms)
+      ✓ Email input visible and enabled
+      ✓ Password input visible and enabled
+      ✓ Submit button visible and enabled
+      ✓ No console errors
+      📸 Screenshot: test-X.Y-scenario-1.png
+      Status: ✅ PASSED (1m 12s)
+
+[2/5] Scenario 2: Successful Login Flow
+      Status: 🔄 Running...
+      ✓ Form accepts input
+      ✓ POST /api/v1/auth/login → 200 OK (145ms)
+      ✓ Redirected to /products
+      ✓ Token stored in localStorage
+      ✓ User data correct
+      ✓ isAuthenticated: true
+      📸 Screenshot: test-X.Y-scenario-2.png
+      Status: ✅ PASSED (2m 34s)
+
+[3/5] Scenario 3: Invalid Credentials Error
+      Status: 🔄 Running...
+      ✓ Error message displayed
+      ✓ POST /api/v1/auth/login → 401 Unauthorized
+      ✓ Remains on /login
+      ✓ No token stored
+      📸 Screenshot: test-X.Y-scenario-3-error.png
+      Status: ✅ PASSED (1m 45s)
+
+[4/5] Scenario 4: Form Validation
+      Status: 🔄 Running...
+      ✓ Empty email shows error
+      ✓ Empty password shows error
+      ✓ Invalid email format detected
+      ✓ Submit disabled when invalid
+      Status: ✅ PASSED (1m 58s)
+
+[5/5] Scenario 5: Loading State
+      Status: 🔄 Running...
+      ✓ Loading spinner shown
+      ✓ Button disabled during load
+      Status: ✅ PASSED (0m 54s)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 INSPECTION RESULTS
+
+Network Analysis:
+  ✓ All API calls successful
+  ✓ Correct request/response format
+  ✓ Status codes as expected
+
+Console Analysis:
+  ✓ 0 errors
+  ✓ 0 warnings
+  ✓ Clean console
+
+Storage Analysis:
+  ✓ localStorage structure correct
+  ✓ Data persists as expected
+
+Elements Analysis:
+  ✓ HTML structure valid
+  ✓ Accessibility attributes present
+
+Regression Tests:
+  ✓ Homepage still loads
+  ✓ API client still works
+  ✓ Previous tasks functional
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ ALL TESTS PASSED (5/5)
+
+Test Duration: 8m 23s
+Console Errors: 0
+Network Errors: 0
+Regression Issues: 0
+Screenshots: 5 captured
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**What happens:**
+1. Start dev server if not running
+2. Clear browser state (localStorage, cookies)
+3. Execute each test scenario from generated test file
+4. Use Playwright (via Computer Use) to:
+   - Navigate to pages
+   - Fill forms
+   - Click buttons
+   - Check elements
+   - Verify responses
+   - Take screenshots
+5. Monitor console for errors
+6. Monitor network for failures
+7. Verify data persistence
+8. Run quick regression checks
+
+**If tests fail:**
+```
+❌ TEST FAILURES DETECTED
+
+Test Results: 3/5 passed, 2/5 failed
+
+Failed Scenarios:
+
+[3/5] Scenario 3: Invalid Credentials Error
+      Status: ❌ FAILED
+      Issue: Error message not displayed
+      Expected: [role="alert"] element with error text
+      Actual: Element not found
+      Screenshot: test-X.Y-scenario-3-failure.png
+
+[4/5] Scenario 4: Form Validation
+      Status: ❌ FAILED
+      Issue: Email validation not working
+      Expected: Error for invalid email format
+      Actual: Form submitted without validation
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NEXT STEPS:
+
+The implementation has issues that need fixing before 
+this task can be marked complete.
+
+Options:
+1️⃣  auto-fix   - Let me analyze and fix automatically
+2️⃣  guide-fix  - Guide me through fixing issues
+3️⃣  show-code  - Show me the test code to review
+4️⃣  skip-tests - Mark complete anyway (not recommended)
+
+Your choice:
+```
+
+---
+
+### Step 6: Record Test Results ✨ NEW
+
+Save comprehensive test results:
+```
+📝 RECORDING TEST RESULTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Creating detailed test report...
+
+File: .claude/tasks/processed/Task X.Y - Test Results.md
+
+Sections included:
+  ✓ Executive Summary
+  ✓ Detailed Scenario Results (5 scenarios)
+  ✓ Network Analysis
+  ✓ Console Analysis
+  ✓ Storage Analysis
+  ✓ Elements Analysis
+  ✓ Screenshots (5 captured)
+  ✓ Issues Found & Fixed (if any)
+  ✓ Regression Test Results
+  ✓ Performance Metrics
+
+✓ Test results saved successfully
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**Test Results File includes:**
+- Executive summary (pass/fail, duration)
+- Detailed results for each scenario
+- What worked and what didn't
+- Network request/response analysis
+- Console log analysis
+- Storage state verification
+- HTML structure validation
+- Screenshots for each scenario
+- Issues encountered and how they were fixed
+- Regression test outcomes
+- Performance metrics
+
+---
+
+### Step 7: Present Results
+
+After implementation AND testing complete, display comprehensive results:
 ```
 ✅ TASK COMPLETED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Task X.Y: [Name]
-Duration: [time]
+Duration: 28 minutes (implementation: 20m, testing: 8m)
 Status: ✅ COMPLETED
 
 📁 FILES CREATED
@@ -148,39 +404,66 @@ Status: ✅ COMPLETED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✓ path/to/existing.ts - [what changed]
 
-✅ TESTS PASSED
+✅ TESTS PASSED ✨ NEW
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[List each test from "Test Criteria" section with ✓]
-✓ npm run dev - Server starts successfully
-✓ http://localhost:3000 - Page loads
-✓ Console - No errors
-✓ TypeScript - Compilation successful
+Test Status: ✅ All Passed (5/5 scenarios)
+Test File: /task/TestX/Task X.Y.md
+Test Duration: 8m 23s
+
+Scenarios Tested:
+✓ Scenario 1: Login Page Loads - PASSED
+✓ Scenario 2: Successful Login - PASSED
+✓ Scenario 3: Invalid Credentials - PASSED
+✓ Scenario 4: Form Validation - PASSED
+✓ Scenario 5: Loading State - PASSED
+
+Quality Checks:
+✓ Console Errors: 0
+✓ Network Errors: 0
+✓ Regression Tests: All passed
+✓ Accessibility: Basic checks passed
+
+Screenshots: 5 captured
+Test Results: .claude/tasks/processed/Task X.Y - Test Results.md
 
 📊 TOKEN USAGE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Input Tokens:     12,450
-Output Tokens:    8,230
-Total Tokens:     20,680
-Cost:             $0.160
+Implementation:
+  Input Tokens:     12,450
+  Output Tokens:    8,230
+  Total Tokens:     20,680
+  Cost:             $0.160
 
-(Token counts from conversation usage)
+Testing: ✨ NEW
+  Input Tokens:     3,200
+  Output Tokens:    2,100
+  Total Tokens:     5,300
+  Cost:             $0.041
+
+Total Task Cost:    $0.201
 
 📈 PROJECT PROGRESS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Phase 0:          [1/4] ████░░░░░░░░ 25%
-Overall:          [1/76] █░░░░░░░░░░ 1.3%
-Total Cost:       $0.160
+Phase X:          [N/M] ████░░░░░░░░ XX%
+Overall:          [N/76] █░░░░░░░░░░ X.X%
+Total Cost:       $X.XXX
+
+Testing Stats: ✨ NEW
+  Tasks Tested: N
+  All Passed: N (XX%)
+  Test Pass Rate: XX.X%
 
 📄 DOCUMENTATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Created: .claude/tasks/processed/Task X.Y.md
+Implementation: .claude/tasks/processed/Task X.Y.md
+Test Results: .claude/tasks/processed/Task X.Y - Test Results.md ✨ NEW
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ---
 
-### Step 4.5: Update System Files
+### Step 7.5: Update System Files ✨ UPDATED
 
 Before presenting options to user:
 
@@ -189,24 +472,46 @@ Before presenting options to user:
    - Use template provided at end of this file
    - Include all sections: summary, files, tests, tokens, issues
 
-2. **Update systemTasks.md**
+2. **Create Test Results Documentation** ✨ NEW
+   - Create `.claude/tasks/processed/Task X.Y - Test Results.md`
+   - Include:
+      - Executive summary
+      - Detailed scenario results
+      - Network/Console/Storage analysis
+      - Issues found and fixed
+      - Screenshots captured
+      - Final verdict
+
+3. **Update systemTasks.md**
    - Change status: 🔄 IN_PROGRESS → ✅ COMPLETED
    - Fill in "Completed" timestamp
    - Calculate and fill "Duration"
    - Add "Input Tokens", "Output Tokens", "Total Tokens"
    - Calculate and add "Cost Estimate"
-   - Update "Progress Summary" totals
-   - Update "Token Usage by Phase" table
-   - Add entry to "Recent Activity Log"
+   - **✨ NEW: Add Testing section:**
+```markdown
+     - **Test Status**: ✅ PASSED
+     - **Test File**: `task/TestX/Task X.Y.md`
+     - **Test Scenarios**: 5 total (5 passed, 0 failed)
+     - **Test Duration**: 8m 23s
+     - **Test Cost**: $0.041
+     - **Console Errors**: 0
+     - **Network Errors**: 0
+     - **Test Results File**: `.claude/tasks/processed/Task X.Y - Test Results.md`
+```
+- Update "Progress Summary" totals
+- Update "Token Usage by Phase" table
+- **✨ NEW: Update "Testing Summary" section**
+- Add entry to "Recent Activity Log"
 
-3. **Keep prompt.md as-is**
+4. **Keep prompt.md as-is**
    - Do NOT clear yet
    - Wait for user to choose "continue" first
-   - This allows user to review/fix/test before moving on
+   - This allows user to review/fix/re-test before moving on
 
 ---
 
-### Step 5: User Review & Decision
+### Step 8: User Review & Decision ✨ UPDATED
 
 Present options to user:
 ```
@@ -215,28 +520,30 @@ Present options to user:
 
 What would you like to do?
 
-1️⃣  continue    - Start next task (Task X.Y+1)
-2️⃣  review      - Show me the code/files created
-3️⃣  test        - Let me test it manually first
-4️⃣  fix         - Something's wrong, let's fix it
-5️⃣  details     - Show more details about this task
-6️⃣  pause       - Stop for now, continue later
-7️⃣  skip-next   - Skip next task and go to X.Y+2
+1️⃣  continue       - Start next task (Task X.Y+1)
+2️⃣  review         - Show me the code/files created
+3️⃣  review-tests   - Review test results in detail ✨ NEW
+4️⃣  re-test        - Run tests again ✨ NEW
+5️⃣  fix            - Something's wrong, let's fix it
+6️⃣  details        - Show more details about this task
+7️⃣  pause          - Stop for now, continue later
+8️⃣  skip-next      - Skip next task and go to X.Y+2
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Your choice (1-7 or type command):
+Your choice (1-8 or type command):
 ```
 
 **Wait for user input**
 
 ---
 
-### Step 6: Handle User Choice
+### Step 9: Handle User Choice ✨ UPDATED
 
 #### Option 1: continue
 
 **Actions:**
+- Verify all tests passed (if not, warn user)
 - Clear `.claude/tasks/prompt.md`
 - Set prompt.md status back to READY_FOR_NEXT_TASK
 - Proceed to Step 1 with next task
@@ -246,6 +553,8 @@ Your choice (1-7 or type command):
 ```
 User: continue
   ↓
+Check: All tests passed? ✅ Yes
+  ↓
 Clear prompt.md
   ↓
 Go to Step 1 (identify next PENDING task)
@@ -254,6 +563,27 @@ Show next task to user
   ↓
 Wait for confirmation
 ```
+
+**If tests failed:**
+```
+⚠️  WARNING: Tests Failed
+
+Task X.Y has 2 failing tests. Proceeding to the next 
+task is not recommended as it may cause cascading issues.
+
+Failed Tests:
+  - Scenario 3: Invalid Credentials Error
+  - Scenario 4: Form Validation
+
+Options:
+1️⃣  fix-first   - Fix issues before continuing (recommended)
+2️⃣  continue    - Continue anyway (may cause problems)
+3️⃣  back        - Go back to review options
+
+Your choice:
+```
+
+---
 
 #### Option 2: review
 
@@ -267,52 +597,142 @@ Wait for confirmation
 **Example:**
 ```
 📄 FILES CREATED:
-1. package.json (125 lines)
-2. next.config.js (18 lines)
-3. tsconfig.json (42 lines)
-4. app/layout.tsx (35 lines)
-5. app/page.tsx (28 lines)
+1. app/(auth)/login/page.tsx (125 lines)
+2. components/auth/LoginForm.tsx (89 lines)
+3. lib/hooks/useAuth.ts (42 lines)
+4. lib/api/auth.ts (65 lines)
 
-Which to review? (1-5, filename, or 'all')
+Which to review? (1-4, filename, or 'all')
 
-User: 1
+User: 2
 
-[Shows package.json with syntax highlighting]
+[Shows LoginForm.tsx with syntax highlighting]
 
 Review another file? (yes/no/back)
 ```
 
-#### Option 3: test
+---
+
+#### Option 3: review-tests ✨ NEW
 
 **Actions:**
-- Display testing instructions from task definition
-- If task has "Common Issues" section, show it
-- Wait for user to test manually
-- Ask: "Tests passed? (yes/no/issues)"
-- **If yes**: Return to options menu
-- **If no or issues**: Go to fix mode (Option 4)
+- Display full test results file
+- Show detailed scenario breakdowns
+- Display screenshots if requested
+- Show network/console analysis
+- Return to options menu
 
 **Example:**
 ```
-🧪 MANUAL TESTING MODE
+📊 TEST RESULTS - Task X.Y
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-From task definition, please test:
-✓ npm run dev - Should start on port 3000
-✓ Open http://localhost:3000 - Should load page
-✓ Check console - Should have no errors
+Executive Summary:
+  ✅ ALL TESTS PASSED (5/5)
+  Duration: 8m 23s
+  Console Errors: 0
+  Network Errors: 0
+  
+Detailed Results:
 
-Common issues to watch for:
-- Port 3000 already in use
-- Missing dependencies
-- TypeScript errors
+[1/5] Scenario 1: Login Page Loads Successfully
+      Status: ✅ PASSED (1m 12s)
+      
+      Results:
+        ✓ Email input visible and enabled
+        ✓ Password input visible and enabled
+        ✓ Submit button visible and enabled
+        ✓ Page title correct
+        ✓ No console errors
+      
+      Screenshot: test-X.Y-scenario-1.png
+      
+[2/5] Scenario 2: Successful Login Flow
+      Status: ✅ PASSED (2m 34s)
+      
+      Results:
+        ✓ Form accepted input
+        ✓ POST /api/v1/auth/login → 200 OK (145ms)
+        ✓ Redirected to /products
+        ✓ Token stored in localStorage
+        ✓ User data stored correctly
+      
+      Auth State Verified:
+        - hasToken: true
+        - isAuthenticated: true
+        - userEmail: test@example.com
+      
+      Screenshot: test-X.Y-scenario-2-logged-in.png
 
-Take your time to test everything.
+[... continues for all scenarios ...]
 
-Tests passed? (yes/no/issues)
+Network Analysis:
+  Request: POST /auth/login
+  Status: 200 OK
+  Duration: 145ms
+  Request: {"email":"test@example.com","password":"***"}
+  Response: {"accessToken":"eyJ...","user":{...}}
+
+Console Analysis:
+  Errors: 0
+  Warnings: 0
+  Status: ✅ Clean
+
+Storage Analysis:
+  localStorage Keys: ['auth-storage']
+  Data Structure: ✅ Correct
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+View screenshots? (yes/no)
+Back to options? (yes)
 ```
 
-#### Option 4: fix
+---
+
+#### Option 4: re-test ✨ NEW
+
+**Actions:**
+- Ask for confirmation
+- Re-run all test scenarios
+- Show updated results
+- Update test results file
+- Return to options menu
+
+**Example:**
+```
+🔄 RE-TESTING Task X.Y
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This will re-run all 5 test scenarios.
+
+Reasons to re-test:
+  - You made changes to the code
+  - Tests may have been affected by external factors
+  - Want to verify consistency
+
+Continue with re-test? (yes/no)
+
+User: yes
+
+[Runs tests again - same as Step 5]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ RE-TEST COMPLETE
+
+Previous Results: 5/5 passed
+Current Results: 5/5 passed
+Status: Consistent ✅
+
+Updated: .claude/tasks/processed/Task X.Y - Test Results.md
+
+Back to options? (yes)
+```
+
+---
+
+#### Option 5: fix ✨ UPDATED
 
 **Actions:**
 - Ask: "What needs to be fixed? (describe the issue)"
@@ -321,8 +741,8 @@ Tests passed? (yes/no/issues)
 - Propose solution with specific changes
 - Ask for approval: "Proceed with fix? (yes/no)"
 - If yes: Execute fix
-- Re-run affected tests
-- Update processed documentation with fix notes
+- **✨ NEW: Re-run affected tests**
+- Update both processed files (implementation + test results)
 - Show fix results
 - Return to options menu
 
@@ -333,21 +753,26 @@ Tests passed? (yes/no/issues)
 
 What needs to be fixed?
 
-User: Port 3000 is already in use
+User: The error message isn't showing when login fails
 
 Analyzing...
 
-ISSUE: Port 3000 conflict
-CAUSE: Another process is using the port
+ISSUE: Missing error alert component
+CAUSE: Form doesn't display validation errors
+
+Found in test results:
+  - Scenario 3: Invalid Credentials - Failed
+  - Expected: [role="alert"] with error message
+  - Actual: Element not found
 
 PROPOSED SOLUTION:
-1. Update next.config.js to use port 3001
-2. Update dev script in package.json
-3. Re-test with new port
+1. Add error state to LoginForm component
+2. Display error with role="alert" attribute
+3. Show error message from API response
 
 Files to modify:
-- next.config.js - Add port configuration
-- package.json - Update dev script
+  - components/auth/LoginForm.tsx
+  - Add error alert component
 
 Proceed with fix? (yes/no)
 
@@ -355,19 +780,40 @@ User: yes
 
 [Applies fix]
 
-✅ FIX APPLIED
-- Modified next.config.js
-- Modified package.json
-- Tested: Server now runs on port 3001
-- Updated processed documentation
+Applying fix...
+✓ Modified LoginForm.tsx
+✓ Added error alert with proper aria attributes
+✓ Tested error display
+
+Re-running affected tests...
+
+🧪 Testing Scenario 3: Invalid Credentials
+    ✓ Error message now displayed correctly
+    ✓ Has role="alert" attribute
+    ✓ Shows correct error text
+    Status: ✅ NOW PASSES
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ FIX APPLIED & VERIFIED
+
+Updated Files:
+  ✓ components/auth/LoginForm.tsx
+  ✓ .claude/tasks/processed/Task X.Y.md
+  ✓ .claude/tasks/processed/Task X.Y - Test Results.md
+
+Test Status: All tests now pass (5/5) ✅
 
 Back to review options? (yes)
 ```
 
-#### Option 5: details
+---
+
+#### Option 6: details
 
 **Actions:**
 - Read and display `.claude/tasks/processed/Task X.Y.md` (full content)
+- **✨ NEW: Also show test results summary**
 - Show full task definition from `/task/PhaseX/Task X.Y.md`
 - Display detailed token usage breakdown with cost calculation
 - Show all test results with pass/fail status
@@ -380,7 +826,21 @@ Back to review options? (yes)
 📊 DETAILED TASK REPORT - Task X.Y
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+IMPLEMENTATION DOCUMENTATION:
 [Full content of processed/Task X.Y.md]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✨ TEST RESULTS SUMMARY:
+  Status: ✅ All Passed (5/5)
+  Duration: 8m 23s
+  Test File: /task/TestX/Task X.Y.md
+  Results File: .claude/tasks/processed/Task X.Y - Test Results.md
+  
+  Console Errors: 0
+  Network Errors: 0
+  Regression Issues: 0
+  Screenshots: 5 captured
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -389,14 +849,17 @@ ORIGINAL TASK DEFINITION:
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+View full test results? (yes/no)
 Back to review options? (yes)
 ```
 
-#### Option 6: pause
+---
+
+#### Option 7: pause
 
 **Actions:**
 - Keep all files as-is (don't clear anything)
-- Show completion summary
+- Show completion summary including test results
 - Show instructions to resume
 
 **Display:**
@@ -408,11 +871,18 @@ Session saved successfully.
 
 COMPLETED TODAY:
 - Task X.Y: [Name] ✅
+  Implementation: ✅ Complete
+  Tests: ✅ All Passed (5/5) ✨
 
 PROGRESS:
 - Phase X: [N/M] tasks done
 - Overall: [N/76] tasks (X.X%)
 - Total Cost: $X.XX
+
+✨ TESTING PROGRESS:
+- Tasks Tested: N
+- All Passed: N (XX%)
+- Test Pass Rate: XX.X%
 
 TO RESUME LATER:
 Say: "Continue from where we left off"
@@ -423,7 +893,9 @@ The next task will be: Task X.Y+1
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-#### Option 7: skip-next
+---
+
+#### Option 8: skip-next
 
 **Actions:**
 - Ask for confirmation: "Are you sure? This will mark Task X.Y+1 as BLOCKED."
@@ -435,31 +907,6 @@ The next task will be: Task X.Y+1
    - Add to "Blockers & Issues" section
    - Find task after that (X.Y+2)
    - Proceed to Step 1 with X.Y+2
-
-**Example:**
-```
-⚠️  SKIP CONFIRMATION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-This will skip Task X.Y+1 and mark it as BLOCKED.
-
-Next task will be: Task X.Y+2
-
-Are you sure? (yes/no)
-
-User: yes
-
-Why skip Task X.Y+1? (reason will be noted)
-
-User: Waiting for design mockups
-
-✅ Task X.Y+1 marked as ⚠️ BLOCKED
-   Reason: Waiting for design mockups
-   Added to systemTasks.md Blockers section
-
-Proceeding to Task X.Y+2...
-[Goes to Step 1]
-```
 
 ---
 
@@ -498,13 +945,17 @@ Total Cost = Input Cost + Output Cost
 
 **Example:**
 ```
-Input: 12,450 tokens
-  → (12,450 / 1,000,000) × $3 = $0.037
+Implementation:
+  Input: 12,450 tokens → $0.037
+  Output: 8,230 tokens → $0.123
+  Subtotal: $0.160
 
-Output: 8,230 tokens
-  → (8,230 / 1,000,000) × $15 = $0.123
+Testing:
+  Input: 3,200 tokens → $0.010
+  Output: 2,100 tokens → $0.032
+  Subtotal: $0.042
 
-Total: $0.037 + $0.123 = $0.160
+Total Task Cost: $0.202
 ```
 
 ---
@@ -517,6 +968,14 @@ Total: $0.037 + $0.123 = $0.160
 - **ALWAYS read** `/task/PhaseX/Task X.Y.md` first
 - **Follow exactly** what the task definition specifies
 - **Reference the file** in processed documentation
+
+### Testing is Mandatory ✨ NEW
+
+- **ALWAYS generate** test scenarios after implementation
+- **ALWAYS execute** all tests before marking complete
+- **NEVER skip** testing unless tests fail and user explicitly approves
+- **RE-TEST** after any fixes are applied
+- **DOCUMENT** all test results comprehensively
 
 ### Display Information from Task File
 
@@ -532,14 +991,10 @@ When showing task details, extract from these sections:
 
 ### Create Processed Documentation
 
-After task completion, create `.claude/tasks/processed/Task X.Y.md` with:
-- Reference to original task definition
-- What was actually done
-- Files created (with descriptions)
-- Tests performed (with results)
-- Token usage and cost
-- Any deviations from the plan
-- Issues encountered and solutions
+After task completion, create TWO files:
+
+1. **`.claude/tasks/processed/Task X.Y.md`** - Implementation documentation
+2. **`.claude/tasks/processed/Task X.Y - Test Results.md`** ✨ NEW - Test results
 
 ---
 
@@ -563,29 +1018,43 @@ Options:
 Your choice:
 ```
 
-### If Task Definition Invalid/Incomplete
+---
+
+### If Tests Fail ✨ NEW
 ```
-⚠️  WARNING: Task Definition Incomplete
+❌ TESTS FAILED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-File: /task/PhaseX/Task X.Y.md
-Issues found:
-- Missing "Requirements" section
-- Missing "Expected Outputs" section
+Task X.Y: [Name]
+Test Results: 3/5 passed, 2/5 failed
 
-I can proceed with best effort, but results may not be complete.
+Failed Scenarios:
+  [3/5] Scenario 3: Invalid Credentials Error
+        Issue: Error message not displayed
+        
+  [4/5] Scenario 4: Form Validation  
+        Issue: Email validation not working
 
-Options:
-1️⃣  proceed - Execute with available information
-2️⃣  skip - Skip this task for now
-3️⃣  fix-def - Let's fix the definition first
+Test File: /task/TestX/Task X.Y.md
+Test Results: .claude/tasks/processed/Task X.Y - Test Results.md
+
+What would you like to do?
+
+1️⃣  auto-fix       - Let me analyze and fix issues
+2️⃣  guide-fix      - Guide me through fixing
+3️⃣  show-tests     - Show me the failing test code
+4️⃣  mark-complete  - Mark complete anyway (NOT recommended)
+5️⃣  retry          - Retry tests (if you fixed manually)
+6️⃣  skip           - Skip this task for now
 
 Your choice:
 ```
 
-### If Task Fails
+---
+
+### If Implementation Fails
 ```
-❌ TASK FAILED
+❌ IMPLEMENTATION FAILED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Task X.Y: [Name]
@@ -600,9 +1069,9 @@ From task definition "Common Issues" section:
 
 What would you like to do?
 
-1️⃣  retry       - Try the task again from start
+1️⃣  retry       - Try the implementation again from start
 2️⃣  debug       - Let's investigate the error
-3️⃣  skip        - Skip this task for now
+3️⃣  skip        - Skip this task for now (mark as BLOCKED)
 4️⃣  modify      - Adjust the task requirements
 
 Your choice:
@@ -610,257 +1079,36 @@ Your choice:
 
 ---
 
-## Example Complete Flow
-```
-User: /execute-task
+## Summary of Testing Integration ✨
 
-Claude:
-📋 NEXT TASK IDENTIFIED
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Task Number: 0.1
-Task Name: Create Next.js Project
-Phase: Phase 0
-Task Definition: /task/Phase0/Task 0.1.md
-Status: ⏳ PENDING
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Ready to start? (yes/no/skip)
+**What Changed:**
+1. Added Step 4: Generate test scenarios automatically
+2. Added Step 5: Execute tests using Playwright
+3. Added Step 6: Record detailed test results
+4. Updated Step 7: Include test results in summary
+5. Added Option 3: Review test results
+6. Added Option 4: Re-run tests
+7. Updated Option 5: Re-test after fixes
+8. Enhanced token tracking to include test costs
+9. Added test status to all displays
+10. Created test results documentation file
 
-User: yes
+**Benefits:**
+- ✅ Every task is actually verified to work
+- ✅ Catches issues immediately
+- ✅ Prevents breaking previous functionality
+- ✅ No manual testing needed
+- ✅ Complete documentation of what works
+- ✅ Clear pass/fail criteria
+- ✅ Can re-test anytime
+- ✅ Tracks test costs separately
 
-Claude:
-[Reads /task/Phase0/Task 0.1.md]
-
-📖 TASK DETAILS - Task 0.1
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Create a new Next.js 14 project with TypeScript and 
-install all required dependencies for the e-commerce 
-frontend.
-
-KEY REQUIREMENTS:
-- Initialize Next.js with specific configuration
-- Install core dependencies (React Query, Zustand, etc.)
-- Initialize shadcn/ui
-- Verify installation with dev server
-
-EXPECTED OUTPUTS:
-- package.json with all dependencies
-- next.config.js configuration file
-- tsconfig.json for TypeScript
-- tailwind.config.ts for styling
-- components.json for shadcn/ui
-- Working dev server at localhost:3000
-
-TEST CRITERIA:
-✓ npm run dev starts without errors
-✓ npm run build completes successfully
-✓ Browser loads at localhost:3000
-✓ TypeScript compilation works
-✓ Tailwind CSS is functional
-
-ESTIMATED DURATION: 15-20 minutes
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Full task definition: /task/Phase0/Task 0.1.md
-
-Proceed with execution? (yes/no/read-full)
-
-User: yes
-
-Claude:
-⚙️  Step 1/4: Creating Next.js project...
-    ✓ Running create-next-app
-    ✓ Selected TypeScript, Tailwind, App Router
-
-⚙️  Step 2/4: Installing dependencies...
-    ✓ Installed @tanstack/react-query
-    ✓ Installed zustand
-    ✓ Installed axios
-    [... etc]
-
-⚙️  Step 3/4: Configuring shadcn/ui...
-    ✓ Initialized with default settings
-
-⚙️  Step 4/4: Running verification tests...
-    ✓ Dev server started successfully
-    ✓ Build completed without errors
-
-✅ TASK COMPLETED
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Task 0.1: Create Next.js Project
-Duration: 18 minutes
-Status: ✅ COMPLETED
-
-📁 FILES CREATED
-✓ package.json - All dependencies listed
-✓ next.config.js - Configuration complete
-✓ tsconfig.json - Strict mode enabled
-✓ tailwind.config.ts - Tailwind configured
-✓ components.json - shadcn/ui config
-✓ app/layout.tsx - Root layout
-✓ app/page.tsx - Home page
-[... 20 more files]
-
-✅ TESTS PASSED
-✓ npm run dev - Server starts successfully
-✓ npm run build - Build completes in 45s
-✓ http://localhost:3000 - Page loads
-✓ TypeScript - No compilation errors
-✓ Tailwind CSS - Styles working
-
-📊 TOKEN USAGE
-Input Tokens:     12,450
-Output Tokens:    8,230
-Total Tokens:     20,680
-Cost:             $0.160
-
-📈 PROJECT PROGRESS
-Phase 0:          [1/4] ████░░░░░░░░ 25%
-Overall:          [1/76] █░░░░░░░░░░ 1.3%
-Total Cost:       $0.160
-
-📄 DOCUMENTATION
-Created: .claude/tasks/processed/Task 0.1.md
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🔍 REVIEW OPTIONS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-What would you like to do?
-1️⃣ continue  2️⃣ review  3️⃣ test  4️⃣ fix  
-5️⃣ details  6️⃣ pause  7️⃣ skip-next
-
-Your choice:
-
-User: continue
-
-Claude:
-[Clears prompt.md]
-[Reads /task/Phase0/Task 0.2.md]
-
-📋 NEXT TASK IDENTIFIED
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Task Number: 0.2
-Task Name: Create Project Structure
-...
-```
+**Files Created Per Task:**
+1. Implementation files (as before)
+2. `/task/TestX/Task X.Y.md` - Test scenarios (NEW)
+3. `.claude/tasks/processed/Task X.Y.md` - Implementation docs
+4. `.claude/tasks/processed/Task X.Y - Test Results.md` - Test results (NEW)
 
 ---
 
-## Processed Documentation Template
-```markdown
-# Task X.Y: [Task Name]
-
-**Status**: ✅ COMPLETED
-**Task Definition**: `/task/PhaseX/Task X.Y.md`
-**Started**: 2026-02-18 10:30:00
-**Completed**: 2026-02-18 11:15:00
-**Duration**: 45 minutes
-
----
-
-## Task Summary
-
-[Copy the Description section from the task definition file]
-
-Source: `/task/PhaseX/Task X.Y.md`
-
----
-
-## What Was Done
-
-[Detailed description of actual implementation]
-
-### Requirements Completed
-
-From task definition:
-✓ [Requirement 1] - Completed successfully
-✓ [Requirement 2] - Completed successfully
-✓ [Requirement 3] - Completed with minor adjustment
-
-[Explain any deviations or adjustments]
-
----
-
-## Files Created
-
-[List matches "Expected Outputs" from task definition]
-
-✓ package.json - Contains all required dependencies
-✓ next.config.js - Configured as specified
-✓ tsconfig.json - TypeScript strict mode enabled
-[... etc, matching task definition]
-
----
-
-## Tests Performed
-
-[List matches "Test Criteria" from task definition]
-
-✓ npm run dev - Server starts on port 3000
-✓ npm run build - Build completes in 45s
-✓ Browser test - Page loads without errors
-✓ TypeScript - No compilation errors
-✓ Tailwind CSS - Styles applied correctly
-
-All tests from task definition passed ✅
-
----
-
-## Token Usage
-
-**Input Tokens**: 45,230
-**Output Tokens**: 28,450
-**Total Tokens**: 73,680
-
-**Cost Breakdown**:
-- Input Cost: (45,230 / 1,000,000) × $3 = $0.136
-- Output Cost: (28,450 / 1,000,000) × $15 = $0.427
-- **Total Cost**: $0.563
-
----
-
-## Issues Encountered
-
-### Issue 1: [Description]
-**Problem**: [What went wrong]
-**Solution**: [How it was fixed]
-**Reference**: Task definition "Common Issues" section
-
-[If the task definition had a "Common Issues" section 
-that helped solve this, reference it]
-
----
-
-## Deviations from Task Definition
-
-[List any places where actual implementation differs 
-from what the task definition specified, with reasoning]
-
-Example:
-- Task Definition: "Install date-fns"
-- Actual: Installed date-fns v3.0.6 (latest stable)
-- Reason: Security updates in newer version
-
----
-
-## Next Task Dependencies
-
-This task provides for next tasks:
-- Task 0.2: Project structure can now be created
-- Task 0.3: Configuration files can reference this setup
-- All future tasks: Base project is ready
-
----
-
-## Notes
-
-[Any additional observations or recommendations]
-```
-
----
-
-**This command file is now complete and production-ready!** ✅
-
-The task definition files (`/task/PhaseX/Task X.Y.md`) are the **single source of truth**! 🎯
+**This execute-task.md is now complete with full testing integration!** ✅🧪

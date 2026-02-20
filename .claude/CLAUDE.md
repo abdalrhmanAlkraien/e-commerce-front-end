@@ -1,12 +1,13 @@
-# E-Commerce Frontend - Task Execution System
+# E-Commerce Frontend - Task Execution System with Automated Testing
 
 ## Project Overview
 
-Building a complete e-commerce frontend with public shopping features and admin management panel.
+Building a complete e-commerce frontend with public shopping features and admin management panel, with comprehensive automated testing for every task.
 
 **Project Type**: E-Commerce Platform
 **Target Users**: Anonymous shoppers, Authenticated customers, Admin users
 **Backend**: Spring Boot REST API (OpenAPI spec provided)
+**Testing**: Automated browser testing with Playwright (via Computer Use)
 
 ---
 
@@ -19,7 +20,7 @@ Building a complete e-commerce frontend with public shopping features and admin 
 - **Forms**: react-hook-form + zod validation
 - **HTTP Client**: axios
 - **i18n**: next-intl (English + Arabic RTL)
-- **Testing**: Playwright (for browser automation)
+- **Testing**: Playwright (via Computer Use) (for browser automation) ✨
 - **Backend API**: Spring Boot REST API at http://localhost:8080/api/v1
 
 ---
@@ -33,7 +34,7 @@ Building a complete e-commerce frontend with public shopping features and admin 
 - JWT tokens sent in `Authorization: Bearer <token>` header
 - Anonymous users use `X-SESSION-ID` header for cart operations
 - Access token refresh handled automatically by axios interceptor
-- All responses follow StandardApiResponse wrapper from backend
+- **All responses return data directly** - NO StandardApiResponse wrapper ✨ CORRECTED
 
 ### Authentication & Session Management
 
@@ -58,55 +59,51 @@ Building a complete e-commerce frontend with public shopping features and admin 
 ### Authentication Flow
 
 1. **Anonymous User**:
-  - Visits site → sessionId auto-generated
-  - Adds items to cart → uses sessionId
-  - Cart persists in backend linked to sessionId
+    - Visits site → sessionId auto-generated
+    - Adds items to cart → uses sessionId
+    - Cart persists in backend linked to sessionId
 
 2. **User Registers/Logs In**:
-  - Login sends credentials to `/api/v1/auth/login`
-  - Backend returns JWT token + user data
-  - Frontend stores token in authStore
-  - Backend merges anonymous cart (using sessionId) with user account
-  - User continues shopping with JWT token
+    - Login sends credentials to `/api/v1/auth/login`
+    - Backend returns JWT token + user data
+    - Frontend stores token in authStore
+    - Backend merges anonymous cart (using sessionId) with user account
+    - User continues shopping with JWT token
 
 3. **User Logs Out**:
-  - Token cleared from authStore
-  - SessionId kept intact
-  - User becomes anonymous again
-  - Can continue shopping with same sessionId
+    - Token cleared from authStore
+    - SessionId kept intact
+    - User becomes anonymous again
+    - Can continue shopping with same sessionId
 
 4. **API Requests**:
-  - If token exists → sends `Authorization: Bearer <token>`
-  - If no token but sessionId exists → sends `X-SESSION-ID: <sessionId>`
-  - This is handled automatically by axios interceptor
+    - If token exists → sends `Authorization: Bearer <token>`
+    - If no token but sessionId exists → sends `X-SESSION-ID: <sessionId>`
+    - This is handled automatically by axios interceptor
 
-### API Response Format
+### API Response Format ✨ CORRECTED
 
-All endpoints return this structure:
+**Standard responses return data directly:**
 ```typescript
-{
-  success: boolean;
-  message: string;
-  data: T | null;
-  timestamp: string;
-  errors?: string[];
-}
+// Single item
+const product: ProductResponse = response.data;
+
+// Array
+const products: ProductResponse[] = response.data;
 ```
 
 **Pagination responses:**
 ```typescript
+const page: Page<ProductResponse> = response.data;
+// Then access: page.content, page.totalElements, etc.
+```
+
+**Error responses:**
+```typescript
 {
-  success: true,
-  data: {
-    content: T[],
-    totalElements: number,
-    totalPages: number,
-    number: number,
-    size: number,
-    first: boolean,
-    last: boolean,
-    empty: boolean
-  }
+  message: string;
+  timestamp: string;
+  errors?: string[];
 }
 ```
 
@@ -124,6 +121,7 @@ When generating TypeScript types from the OpenAPI spec:
 6. Numbers stay as `number` type (not `double`, `float`, etc.)
 7. Response wrappers (`Page<T>`) should be generic
 8. Never use `any` type
+9. **No StandardApiResponse wrapper** - data comes directly ✨
 
 ---
 
@@ -139,12 +137,14 @@ When generating TypeScript types from the OpenAPI spec:
 8. **Token/SessionId automatic** - never manually add auth headers (axios does it)
 9. **Cart operations** - always use cartId + appropriate auth method
 10. **Error handling** - always handle loading, error, and empty states
+11. **Testing mandatory** - every task must have automated tests ✨ NEW
+12. **No task complete without passing tests** - all tests must pass ✨ NEW
 
 ---
 
-## Task Execution System
+## Task Execution System with Automated Testing ✨
 
-This project uses a structured task system for organized development.
+This project uses a structured task system with automated testing for every task.
 
 ### Task Locations
 
@@ -168,11 +168,19 @@ This project uses a structured task system for organized development.
 
 **Total Tasks**: 76
 
+**Test Scenarios**: `/task/TestX/Task X.Y.md` ✨ NEW
+- Auto-generated after task implementation
+- Contains Playwright test scenarios
+- Based on task acceptance criteria
+- Covers success paths, edge cases, error handling
+- Includes regression checks
+
 **Task Tracking**: `.claude/tasks/systemTasks.md`
 - Master list of all tasks with status
 - Includes path to each task definition file
 - Updated after each task completion
 - Tracks token usage and costs
+- **Tracks test status and results** ✨ NEW
 
 **Task Documentation**: `.claude/tasks/processed/Task X.Y.md`
 - Created after task completion
@@ -180,49 +188,156 @@ This project uses a structured task system for organized development.
 - Permanent record of implementation decisions
 - Includes token usage tracking
 
-### Execution Workflow
+**Test Results**: `.claude/tasks/processed/Task X.Y - Test Results.md` ✨ NEW
+- Detailed test execution results
+- Scenario-by-scenario breakdown
+- Screenshots captured during tests
+- Network/console/storage analysis
+- Issues found and resolutions
+
+### Execution Workflow ✨ ENHANCED
 
 1. Read `.claude/tasks/systemTasks.md` to find next pending task
 2. Read task definition from `/task/PhaseX/Task X.Y.md`
 3. Display task details to user and wait for confirmation
-4. Execute task following definition requirements exactly
-5. Track token usage during execution
-6. Create processed documentation at `.claude/tasks/processed/Task X.Y.md`
-7. Update systemTasks.md with completion status and token usage
-8. Present review options to user (continue/review/fix/pause)
-9. Wait for user decision before proceeding
+4. Execute task implementation following definition requirements exactly
+5. **Generate test scenarios** automatically from task requirements ✨ NEW
+6. **Execute automated tests** using Playwright (via Computer Use) ✨ NEW
+7. **Verify all tests pass** before marking complete ✨ NEW
+8. Track token usage for both implementation and testing
+9. Create processed documentation at `.claude/tasks/processed/Task X.Y.md`
+10. **Create test results** at `.claude/tasks/processed/Task X.Y - Test Results.md` ✨ NEW
+11. Update systemTasks.md with completion status, token usage, and test results
+12. Present review options to user (continue/review/review-tests/fix/pause)
+13. Wait for user decision before proceeding
 
 ### Commands
 
-- `/execute-task` - Execute next pending task (interactive mode)
-- `/continue-tasks` - Execute multiple tasks in sequence
-- `/review-progress` - Show current progress and statistics
-- `/review-token-usage` - Show token usage and cost report
-- `/fix-task` - Fix issues in last completed task
+**Core Execution:**
+- `/execute-task` - Execute next pending task with automated testing ✨
+- `/continue-tasks` - Execute multiple tasks in batch with testing ✨
+- `/review-progress` - Show current progress, statistics, and test results ✨
+- `/review-token-usage` - Show token usage and cost report (including tests) ✨
+
+**Testing Commands:** ✨ NEW
+- `/test-task [X.Y]` - Run or re-run tests for a specific task
+- `/review-tests [X.Y]` - Review detailed test results for a task
+- `/fix-tests [X.Y]` - Fix test scenarios without changing code
+
+**Issue Resolution:**
+- `/fix-task [X.Y]` - Fix issues in a task (re-tests automatically) ✨
+- `/fix [X.Y] --tests` - Fix only test scenarios
+- `/fix [X.Y] --both` - Fix both code and tests
 
 ### User Shortcuts
 
 When user types a single word command, interpret as:
 
-- **continue** → Execute next task
+**Existing:**
+- **continue** → Execute next task (with testing)
 - **review** → Show files created in last task
-- **fix** → Enter fix mode for last task
+- **fix** → Enter fix mode for last task (with re-testing)
 - **skip** → Skip next task, mark as blocked
-- **status** → Show progress summary
+- **status** → Show progress summary (with test status)
 - **pause** → Stop and save state
 - **help** → Show available commands
 - **retry** → Retry last failed task
-- **test** → Enter manual testing mode
 - **details** → Show full task documentation
+
+**New:** ✨
+- **test** → Run tests for last task
+- **tests** → Show test results for last task
+- **re-test** → Re-run tests for last task
+
+**Existing:**
 - **files** → List all files in project
 - **tokens** → Show token usage report
 - **cost** → Show cost breakdown
 
 ---
 
-## Token Usage Tracking
+## Testing System ✨ NEW
 
-Every task execution is tracked for token usage and cost.
+Every task includes comprehensive automated testing using Playwright (via Computer Use).
+
+### Test Generation
+
+After completing implementation:
+1. Read task definition to extract acceptance criteria
+2. Generate test scenarios covering:
+    - Primary functionality (success paths)
+    - Edge cases and boundary conditions
+    - Error handling and validation
+    - User experience (loading states, feedback)
+    - Integration with previous features
+    - Regression checks
+3. Save to `/task/TestX/Task X.Y.md`
+
+### Test Execution
+
+Using Playwright (via Computer Use):
+1. Start dev server if not running
+2. Clear browser state (localStorage, cookies)
+3. Execute each test scenario:
+    - Navigate to pages
+    - Fill forms
+    - Click buttons
+    - Verify elements
+    - Check API calls
+    - Capture screenshots
+4. Monitor console for errors
+5. Monitor network for failures
+6. Verify data persistence
+7. Run regression checks on previous features
+
+### Test Results
+
+Comprehensive results saved to `.claude/tasks/processed/Task X.Y - Test Results.md`:
+- Executive summary (pass/fail rate, duration)
+- Detailed scenario results
+- Screenshots for each scenario
+- Network request/response analysis
+- Console log analysis
+- Storage state verification
+- Issues found and how they were fixed
+- Performance metrics
+
+### Test Status in systemTasks.md
+
+Each task tracks:
+```markdown
+✨ Testing:
+- Test Status: ✅ PASSED / ❌ FAILED / ⏳ NOT TESTED
+- Test File: /task/TestX/Task X.Y.md
+- Test Scenarios: 5 total (5 passed, 0 failed)
+- Test Duration: 8m 23s
+- Test Cost: $0.04
+- Console Errors: 0
+- Network Errors: 0
+- Regression Issues: 0
+- Test Results File: .claude/tasks/processed/Task X.Y - Test Results.md
+```
+
+### Quality Gates
+
+**Cannot mark task complete unless:**
+- ✅ All test scenarios pass
+- ✅ Zero console errors
+- ✅ Zero network errors (or expected errors handled)
+- ✅ All regression checks pass
+- ✅ Data persists correctly
+
+**If tests fail:**
+- Show detailed failure information
+- Offer to auto-fix or guide through fixing
+- Re-run tests after fixes
+- Only mark complete when all tests pass
+
+---
+
+## Token Usage Tracking ✨ ENHANCED
+
+Every task execution tracks token usage for both implementation and testing.
 
 ### Current Pricing (Claude Sonnet 4.5)
 
@@ -233,29 +348,44 @@ Every task execution is tracked for token usage and cost.
 
 **For Each Task:**
 1. Note conversation token count before execution
-2. Execute task completely
-3. Note conversation token count after execution
-4. Calculate: Tokens Used = After - Before
-5. Log in systemTasks.md with cost calculation
+2. Execute implementation
+3. Note tokens after implementation
+4. **Generate and execute tests** ✨
+5. **Note tokens after testing** ✨
+6. Calculate separate costs for implementation and testing
+7. Log in systemTasks.md with detailed breakdown
 
 **Token Breakdown:**
-- Input: Context + Files Read + Instructions + Task Definition
-- Output: Code Generated + Documentation + Responses + Tests
+- **Implementation Tokens:**
+    - Input: Context + Files Read + Instructions + Task Definition
+    - Output: Code Generated + Documentation + Responses
+
+- **Testing Tokens:** ✨ NEW
+    - Input: Test generation + Playwright commands + Results analysis
+    - Output: Test scenarios + Test execution logs + Results documentation
 
 ### Cost Calculation
 ```
-Input Cost = (Input Tokens / 1,000,000) × $3
-Output Cost = (Output Tokens / 1,000,000) × $15
-Total Cost = Input Cost + Output Cost
+Implementation Cost:
+  Input Cost = (Input Tokens / 1,000,000) × $3
+  Output Cost = (Output Tokens / 1,000,000) × $15
+
+Testing Cost:
+  Input Cost = (Test Input Tokens / 1,000,000) × $3
+  Output Cost = (Test Output Tokens / 1,000,000) × $15
+
+Total Task Cost = Implementation Cost + Testing Cost
 ```
 
 ### Budget Awareness
 
-- Track total spending in systemTasks.md
-- Monitor average cost per task
+- Track total spending including testing in systemTasks.md
+- Monitor average cost per task (implementation + testing)
+- **Track testing cost percentage** (typically 30-40% of total) ✨
 - Project remaining cost based on averages
 - Flag if approaching budget limits
 - Phase-by-phase cost breakdown in progress table
+- **Separate testing cost tracking** ✨
 
 ### Optimization Tips
 
@@ -266,13 +396,16 @@ Total Cost = Input Cost + Output Cost
 4. Use previous task outputs as references
 5. Batch similar tasks together
 6. Don't repeat code unnecessarily in responses
+7. **Efficient test generation** - focus on critical scenarios ✨
+8. **Reuse test patterns** across similar tasks ✨
 
 **High Token Tasks:**
 - Tasks generating large code files (forms, pages)
 - Tasks requiring extensive file reading
 - Tasks with complex debugging
-- Tasks involving browser automation (screenshots, logs)
+- **Tasks with many test scenarios (>5)** ✨
 - Admin CRUD pages with tables
+- **Integration testing across multiple features** ✨
 
 **Low Token Tasks:**
 - Configuration file updates
@@ -280,32 +413,44 @@ Total Cost = Input Cost + Output Cost
 - Documentation updates
 - Simple bug fixes
 - Type definition updates
+- **Simple component tests (2-3 scenarios)** ✨
+
+**Testing Cost Estimates:**
+- Simple tasks: ~$0.02-0.03 per task (3-4 test scenarios)
+- Medium tasks: ~$0.04-0.05 per task (5-6 test scenarios)
+- Complex tasks: ~$0.06-0.08 per task (7+ test scenarios)
+- Integration tests: ~$0.08-0.10 per task (multiple features)
 
 ---
 
-## File Structure Overview
+## File Structure Overview ✨ ENHANCED
 ```
 project-root/
 ├── .claude/
 │   ├── CLAUDE.md                    # This file - main context
 │   ├── commands/                    # Command definitions
-│   │   ├── execute-task.md
-│   │   ├── continue-tasks.md
-│   │   ├── review-progress.md
-│   │   ├── fix-task.md
-│   │   └── review-token-usage.md
+│   │   ├── execute-task.md          # Enhanced with testing
+│   │   ├── continue-tasks.md        # Enhanced with testing
+│   │   ├── review-progress.md       # Enhanced with test metrics
+│   │   ├── fix-task.md              # Enhanced with re-testing
+│   │   ├── review-token-usage.md    # Enhanced with test costs
+│   │   ├── test-task.md             # NEW: Test execution
+│   │   └── review-tests.md          # NEW: Test results review
 │   └── tasks/
-│       ├── systemTasks.md          # Master tracking file
+│       ├── systemTasks.md          # Master tracking (with tests)
 │       ├── prompt.md               # Current task state
 │       └── processed/              # Completed task docs
+│           ├── Task X.Y.md         # Implementation docs
+│           └── Task X.Y - Test Results.md  # NEW: Test results
 ├── task/
 │   ├── Phase0/ ... Phase15/        # Task definitions
-│   └── (76 Task X.Y.md files)
+│   ├── Test0/ ... Test15/          # NEW: Test scenarios
+│   └── (76 Task X.Y.md files + 76 Test X.Y.md files)
 ├── docs/
 │   ├── FRONTEND_ARCHITECTURE.md
 │   ├── API_INTEGRATION.md
 │   ├── CODING_STANDARDS.md
-│   └── TEST_SCENARIOS.md
+│   └── TEST_SCENARIOS.md           # NEW: Testing guide
 └── src/                            # Next.js application
     ├── app/                        # Next.js App Router
     ├── components/                 # React components
@@ -334,30 +479,50 @@ project-root/
 - Completed: 0
 - Pending: 76
 - Percentage: 0%
+- **Tests Passed**: 0/0 ✨
 
 **Token Usage**:
 - Total Tokens: 0
+- Implementation: $0.00
+- **Testing**: $0.00 ✨
 - Total Cost: $0.00
 - Avg per Task: N/A
 
 ---
 
-## Testing Requirements
+## Testing Requirements ✨ ENHANCED
 
-### Manual Testing Checklist
-- Browser console must be clean (no errors or warnings)
-- Forms must show validation errors
-- Loading states required for all data fetching
-- Error boundaries catch and display errors properly
-- Test on Chrome and Safari
-- Test on mobile (375px) and desktop (1440px)
-- Test both anonymous and authenticated user flows
+### Automated Testing (Every Task)
+- **Browser console must be clean** - zero errors or warnings
+- **All user interactions tested** - clicks, form submissions, navigation
+- **Loading states verified** - spinners/skeletons show during data fetching
+- **Error handling tested** - proper error messages and recovery
+- **Data persistence verified** - localStorage/sessionStorage correct
+- **Network requests validated** - correct endpoints, headers, payloads
+- **Responsive design tested** - mobile (375px), tablet (768px), desktop (1440px)
+- **Both user types tested** - anonymous and authenticated flows
+- **Regression checks** - previous features still work
+- **Screenshots captured** - visual documentation of tests
 
-### Browser Automation (Playwright)
-- Setup in Phase 13
-- Automated testing of critical user flows
-- Regression testing after major features
-- Responsive design testing at multiple breakpoints
+### Test Execution Strategy
+1. **After implementation** - tests generated and run automatically
+2. **Before marking complete** - all tests must pass
+3. **After fixes** - affected tests re-run automatically
+4. **Batch execution** - tests run for each task in batch
+5. **Manual trigger** - user can re-run tests anytime
+
+### Test Documentation
+- Every test scenario documented in `/task/TestX/Task X.Y.md`
+- Every test result documented in `.claude/tasks/processed/Task X.Y - Test Results.md`
+- Test status tracked in `systemTasks.md`
+- Test costs tracked separately from implementation
+
+### Quality Metrics
+- **Test pass rate**: Target >95%
+- **Console errors**: Target 0
+- **Network errors**: Target 0 (excluding expected errors)
+- **Regression issues**: Target 0
+- **Test coverage**: 100% of completed tasks
 
 ---
 
@@ -369,40 +534,51 @@ project-root/
 - **Follow exactly** what the task definition specifies
 - **Reference the task file** in processed documentation
 
+### Testing is Mandatory ✨ NEW
+- **Every task must be tested** - no exceptions
+- **Cannot mark complete without passing tests** - all tests must pass
+- **Tests prove functionality** - implementation without tests is incomplete
+- **Fix until tests pass** - keep iterating until all tests green
+- **Re-test after fixes** - verify fixes work with automated tests
+
 ### Anonymous + Authenticated User Support
 - Every feature must work for both user types
 - Cart operations handle both sessionId and JWT
 - Checkout works for anonymous users (they provide email)
 - Login merges anonymous cart with user account
 - Logout preserves sessionId for continued anonymous shopping
+- **Both user types tested** in automated tests ✨
 
 ### Code Quality Standards
 - Follow docs/CODING_STANDARDS.md for all code
 - Follow docs/API_INTEGRATION.md for all API calls
 - Follow docs/FRONTEND_ARCHITECTURE.md for structure
+- **Follow docs/TEST_SCENARIOS.md for testing** ✨
 - TypeScript strict mode - no shortcuts
 - Mobile-first, responsive, RTL-ready
 
 ### Communication Style
 - Show progress during long operations
+- **Show test progress during test execution** ✨
 - Present clear review options after task completion
-- Use emojis for visual clarity (📋 🔄 ✅ ❌)
+- **Include test results in completion summary** ✨
+- Use emojis for visual clarity (📋 🔄 ✅ ❌ 🧪) ✨
 - Wait for user confirmation before proceeding
 - Be concise but complete in responses
 
 ---
 
-## Example Task Execution Session
+## Example Task Execution Session ✨ ENHANCED
 ```
 User: /execute-task
 
 Claude:
 📋 NEXT TASK IDENTIFIED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Task Number: 0.1
-Task Name: Create Next.js Project
-Phase: Phase 0
-Task Definition: /task/Phase0/Task 0.1.md
+Task Number: 2.1
+Task Name: Create Login Page
+Phase: Phase 2
+Task Definition: /task/Phase2/Task 2.1.md
 Status: ⏳ PENDING
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Ready to start? (yes/no/skip)
@@ -410,11 +586,11 @@ Ready to start? (yes/no/skip)
 User: yes
 
 Claude:
-[Reads /task/Phase0/Task 0.1.md]
+[Reads /task/Phase2/Task 2.1.md]
 
-📖 TASK DETAILS - Task 0.1
+📖 TASK DETAILS - Task 2.1
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Create a new Next.js 14 project with TypeScript...
+Create login page with form validation...
 [Shows requirements, outputs, tests]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Proceed with execution? (yes/no/read-full)
@@ -422,17 +598,43 @@ Proceed with execution? (yes/no/read-full)
 User: yes
 
 Claude:
-⚙️  Creating Next.js project...
-⚙️  Installing dependencies...
-⚙️  Running tests...
+⚙️  IMPLEMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚙️  Creating login page...
+⚙️  Creating form component...
+⚙️  Adding validation...
+✅ Implementation complete (20 minutes)
+
+🧪 GENERATING TEST SCENARIOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Identified 5 test scenarios
+✓ Test file created: /task/Test2/Task 2.1.md
+
+🧪 EXECUTING TESTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[1/5] Page loads ✅
+[2/5] Successful login ✅
+[3/5] Invalid credentials ✅
+[4/5] Form validation ✅
+[5/5] Loading state ✅
+
+✅ ALL TESTS PASSED (5/5)
 
 ✅ TASK COMPLETED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 [Shows files, tests, tokens, cost, progress]
 
+Implementation: $0.18 (20 min)
+Testing: $0.04 (8 min)
+Total: $0.22
+
+Tests: 5/5 passed ✅
+Console Errors: 0
+Network Errors: 0
+
 🔍 REVIEW OPTIONS
 What would you like to do?
-1️⃣ continue  2️⃣ review  3️⃣ test  4️⃣ fix
+1️⃣ continue  2️⃣ review  3️⃣ review-tests  4️⃣ fix
 5️⃣ details  6️⃣ pause  7️⃣ skip-next
 
 Your choice:
@@ -440,7 +642,7 @@ Your choice:
 User: continue
 
 Claude:
-[Proceeds to Task 0.2...]
+[Proceeds to Task 2.2...]
 ```
 
 ---
@@ -452,11 +654,42 @@ To begin development:
 1. Ensure all system files are in place
 2. Say: "/execute-task" or "Start Task 0.1"
 3. Confirm when prompted
-4. Review results after each task
-5. Choose to continue, review, fix, or pause
-6. Repeat until all 76 tasks complete
+4. Watch as implementation AND tests execute
+5. Review results including test outcomes
+6. Choose to continue, review, fix, or pause
+7. Repeat until all 76 tasks complete (all with passing tests!)
 ```
 
 ---
 
+## Summary of Testing Integration ✨
+
+**What's New:**
+- ✅ Automated test generation after every task
+- ✅ Playwright (via Computer Use) for browser automation
+- ✅ Test scenarios in `/task/TestX/` directories
+- ✅ Test results in `.claude/tasks/processed/`
+- ✅ Test status tracking in systemTasks.md
+- ✅ Separate test cost tracking
+- ✅ Cannot complete task without passing tests
+- ✅ Re-testing after fixes
+- ✅ Quality metrics (console/network errors)
+- ✅ Regression testing built-in
+- ✅ New commands: test-task, review-tests, fix-tests
+- ✅ Enhanced progress reports with test data
+
+**Benefits:**
+- 🧪 Every feature proven to work before moving on
+- 🚀 Faster development (catch bugs immediately)
+- 📊 Clear quality metrics
+- 🎯 Confidence in all completed work
+- 🔍 Comprehensive test documentation
+- ✅ No manual testing needed
+- 🛡️ Prevents regressions
+- 💰 Predictable testing costs
+
+---
+
 **Remember**: This file is read at the start of every Claude session. Keep it updated with current project status, important decisions, and any critical information Claude needs to know.
+
+**Testing is now a core part of the workflow** - every task includes automated testing to ensure quality and functionality! 🧪✅
