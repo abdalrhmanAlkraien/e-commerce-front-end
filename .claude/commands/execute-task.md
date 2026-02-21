@@ -4,6 +4,34 @@ Execute the next pending task, generate test scenarios, run tests, and wait for 
 
 ---
 
+## 🚨 CRITICAL: Read This First
+
+**Before executing ANY task, you MUST read these files in order:**
+
+1. **`.claude/AI-AGENT-EXECUTION-GUIDE.md`** ⭐ MOST IMPORTANT
+    - Contains complete 10-step workflow
+    - Quality standards and gates
+    - Testing requirements
+    - Documentation requirements
+    - Cost tracking methodology
+    - Critical NEVER/ALWAYS rules
+
+2. **`.claude/CLAUDE.md`**
+    - Project context and overview
+    - Tech stack and architecture
+    - Backend integration rules
+
+3. **`.claude/tasks/systemTasks.md`**
+    - Current progress tracking
+    - Task dependencies
+    - Find next pending task
+
+**READ THE EXECUTION GUIDE FIRST!** It contains detailed instructions for each step below. This file provides the workflow overview, but the execution guide has the complete details.
+
+**DO NOT proceed without reading AI-AGENT-EXECUTION-GUIDE.md!**
+
+---
+
 ## Workflow Overview
 ```
 Step 1: Identify Next Task → User confirms
@@ -17,11 +45,15 @@ Step 8: User Review & Decision → Wait for choice
 Step 9: Handle User Choice → Take action
 ```
 
+**NOTE:** Detailed instructions for each step are in AI-AGENT-EXECUTION-GUIDE.md
+
 ---
 
 ## Workflow
 
 ### Step 1: Identify Next Task
+
+**See AI-AGENT-EXECUTION-GUIDE.md Step 1 for complete details**
 
 1. Read `task/systemTasks.md`
 2. Find first task with status ⏳ PENDING
@@ -43,13 +75,15 @@ Ready to start? (yes/no/skip)
 ```
 
 4. **Wait for user response**
-   - **yes** → Proceed to Step 2
-   - **no** → Stop execution
-   - **skip** → Mark task as ⚠️ BLOCKED, find next task
+    - **yes** → Proceed to Step 2
+    - **no** → Stop execution
+    - **skip** → Mark task as ⚠️ BLOCKED, find next task
 
 ---
 
 ### Step 2: Read & Display Task Definition
+
+**See AI-AGENT-EXECUTION-GUIDE.md Step 2 for complete details**
 
 If user says **yes**:
 
@@ -81,35 +115,37 @@ Proceed with execution? (yes/no/read-full)
 ```
 
 3. **Wait for confirmation**
-   - **yes** → Proceed to Step 3
-   - **no** → Return to Step 1
-   - **read-full** → Display complete task file contents, then ask again
+    - **yes** → Proceed to Step 3
+    - **no** → Return to Step 1
+    - **read-full** → Display complete task file contents, then ask again
 
 ---
 
 ### Step 3: Execute Implementation
 
+**See AI-AGENT-EXECUTION-GUIDE.md Step 3 for complete details**
+
 If user confirms:
 
 1. **Update systemTasks.md:**
-   - Status: ⏳ PENDING → 🔄 IN_PROGRESS
-   - Assigned: [Current timestamp]
+    - Status: ⏳ PENDING → 🔄 IN_PROGRESS
+    - Assigned: [Current timestamp]
 
 2. **Update .claude/tasks/prompt.md:**
-   - Copy full task details to file
-   - Set status to IN_PROGRESS
-   - Record start timestamp
+    - Copy full task details to file
+    - Set status to IN_PROGRESS
+    - Record start timestamp
 
 3. **Track token usage:**
-   - Record conversation token count at start
-   - Track as task progresses
-   - Calculate final: Total = After - Before
-   - Compute cost: (Input × $3 + Output × $15) / 1,000,000
+    - Record conversation token count at start
+    - Track as task progresses
+    - Calculate final: Total = After - Before
+    - Compute cost: (Input × $3 + Output × $15) / 1,000,000
 
 4. **Follow the complete requirements from `/task/PhaseX/Task X.Y.md`:**
-   - Execute each requirement step by step
-   - Create all files listed in "Expected Outputs"
-   - Follow all specifications exactly
+    - Execute each requirement step by step
+    - Create all files listed in "Expected Outputs"
+    - Follow all specifications exactly
 
 5. **Show progress updates:**
 ```
@@ -139,6 +175,8 @@ If user confirms:
 ---
 
 ### Step 4: Generate Test Scenarios ✨ NEW
+
+**See AI-AGENT-EXECUTION-GUIDE.md Step 4 for complete details**
 
 After implementation completes, automatically generate test scenarios:
 ```
@@ -173,20 +211,22 @@ Proceeding to test execution...
 1. Read task definition file
 2. Extract acceptance criteria and requirements
 3. Generate test scenarios based on:
-   - Expected outputs
-   - Test criteria from task definition
-   - Common patterns for this type of task
-   - Edge cases and error conditions
+    - Expected outputs
+    - Test criteria from task definition
+    - Common patterns for this type of task
+    - Edge cases and error conditions
 4. Create `/task/TestX/Task X.Y.md` with:
-   - Test setup instructions
-   - Playwright test code for each scenario
-   - Validation checks
-   - Inspection points
-   - Success criteria
+    - Test setup instructions
+    - Playwright test code for each scenario
+    - Validation checks
+    - Inspection points
+    - Success criteria
 
 ---
 
 ### Step 5: Execute Tests ✨ NEW
+
+**See AI-AGENT-EXECUTION-GUIDE.md Step 5 for complete details**
 
 Run all generated test scenarios using Playwright (via Computer Use):
 ```
@@ -289,12 +329,12 @@ Screenshots: 5 captured
 2. Clear browser state (localStorage, cookies)
 3. Execute each test scenario from generated test file
 4. Use Playwright (via Computer Use) to:
-   - Navigate to pages
-   - Fill forms
-   - Click buttons
-   - Check elements
-   - Verify responses
-   - Take screenshots
+    - Navigate to pages
+    - Fill forms
+    - Click buttons
+    - Check elements
+    - Verify responses
+    - Take screenshots
 5. Monitor console for errors
 6. Monitor network for failures
 7. Verify data persistence
@@ -341,6 +381,8 @@ Your choice:
 
 ### Step 6: Record Test Results ✨ NEW
 
+**See AI-AGENT-EXECUTION-GUIDE.md Step 6 for complete details**
+
 Save comprehensive test results:
 ```
 📝 RECORDING TEST RESULTS
@@ -383,6 +425,8 @@ Sections included:
 ---
 
 ### Step 7: Present Results
+
+**See AI-AGENT-EXECUTION-GUIDE.md Step 10 for complete details**
 
 After implementation AND testing complete, display comprehensive results:
 ```
@@ -465,30 +509,32 @@ Test Results: .claude/tasks/processed/Task X.Y - Test Results.md ✨ NEW
 
 ### Step 7.5: Update System Files ✨ UPDATED
 
+**See AI-AGENT-EXECUTION-GUIDE.md Steps 8-9 for complete details**
+
 Before presenting options to user:
 
 1. **Create Processed Documentation**
-   - Create `.claude/tasks/processed/Task X.Y.md`
-   - Use template provided at end of this file
-   - Include all sections: summary, files, tests, tokens, issues
+    - Create `.claude/tasks/processed/Task X.Y.md`
+    - Use template provided at end of this file
+    - Include all sections: summary, files, tests, tokens, issues
 
 2. **Create Test Results Documentation** ✨ NEW
-   - Create `.claude/tasks/processed/Task X.Y - Test Results.md`
-   - Include:
-      - Executive summary
-      - Detailed scenario results
-      - Network/Console/Storage analysis
-      - Issues found and fixed
-      - Screenshots captured
-      - Final verdict
+    - Create `.claude/tasks/processed/Task X.Y - Test Results.md`
+    - Include:
+        - Executive summary
+        - Detailed scenario results
+        - Network/Console/Storage analysis
+        - Issues found and fixed
+        - Screenshots captured
+        - Final verdict
 
 3. **Update systemTasks.md**
-   - Change status: 🔄 IN_PROGRESS → ✅ COMPLETED
-   - Fill in "Completed" timestamp
-   - Calculate and fill "Duration"
-   - Add "Input Tokens", "Output Tokens", "Total Tokens"
-   - Calculate and add "Cost Estimate"
-   - **✨ NEW: Add Testing section:**
+    - Change status: 🔄 IN_PROGRESS → ✅ COMPLETED
+    - Fill in "Completed" timestamp
+    - Calculate and fill "Duration"
+    - Add "Input Tokens", "Output Tokens", "Total Tokens"
+    - Calculate and add "Cost Estimate"
+    - **✨ NEW: Add Testing section:**
 ```markdown
      - **Test Status**: ✅ PASSED
      - **Test File**: `task/TestX/Task X.Y.md`
@@ -505,9 +551,9 @@ Before presenting options to user:
 - Add entry to "Recent Activity Log"
 
 4. **Keep prompt.md as-is**
-   - Do NOT clear yet
-   - Wait for user to choose "continue" first
-   - This allows user to review/fix/re-test before moving on
+    - Do NOT clear yet
+    - Wait for user to choose "continue" first
+    - This allows user to review/fix/re-test before moving on
 
 ---
 
@@ -539,6 +585,8 @@ Your choice (1-8 or type command):
 ---
 
 ### Step 9: Handle User Choice ✨ UPDATED
+
+**See AI-AGENT-EXECUTION-GUIDE.md for complete handling details**
 
 #### Option 1: continue
 
@@ -900,17 +948,19 @@ The next task will be: Task X.Y+1
 **Actions:**
 - Ask for confirmation: "Are you sure? This will mark Task X.Y+1 as BLOCKED."
 - If yes:
-   - Find next task (X.Y+1)
-   - Update systemTasks.md: Mark as ⚠️ BLOCKED
-   - Ask for reason: "Why skip? (will be noted in systemTasks.md)"
-   - Add reason to "Notes" field
-   - Add to "Blockers & Issues" section
-   - Find task after that (X.Y+2)
-   - Proceed to Step 1 with X.Y+2
+    - Find next task (X.Y+1)
+    - Update systemTasks.md: Mark as ⚠️ BLOCKED
+    - Ask for reason: "Why skip? (will be noted in systemTasks.md)"
+    - Add reason to "Notes" field
+    - Add to "Blockers & Issues" section
+    - Find task after that (X.Y+2)
+    - Proceed to Step 1 with X.Y+2
 
 ---
 
 ## Token Tracking
+
+**See AI-AGENT-EXECUTION-GUIDE.md for complete cost tracking methodology**
 
 ### How to Track Tokens
 
@@ -962,6 +1012,15 @@ Total Task Cost: $0.202
 
 ## Important Rules
 
+**See AI-AGENT-EXECUTION-GUIDE.md Section: Critical Rules for complete list**
+
+### ALWAYS Read These Files First
+
+1. **`.claude/AI-AGENT-EXECUTION-GUIDE.md`** - Complete workflow
+2. **`.claude/CLAUDE.md`** - Project context
+3. **`task/systemTasks.md`** - Progress tracking
+4. **`/task/PhaseX/Task X.Y.md`** - Task definition
+
 ### ALWAYS Read Task Definition File
 
 - **NEVER assume** what a task should do
@@ -999,6 +1058,8 @@ After task completion, create TWO files:
 ---
 
 ## Error Handling
+
+**See AI-AGENT-EXECUTION-GUIDE.md Section: Special Scenarios for complete error handling**
 
 ### If Task Definition File Missing
 ```
@@ -1111,4 +1172,15 @@ Your choice:
 
 ---
 
-**This execute-task.md is now complete with full testing integration!** ✅🧪
+## 📚 Reference
+
+**For complete details on every step, see:**
+- **`.claude/AI-AGENT-EXECUTION-GUIDE.md`** - 10-step workflow with examples
+- **`.claude/CLAUDE.md`** - Project overview and rules
+- **`docs/TEST_SCENARIOS.md`** - Testing methodology
+
+**This execute-task.md provides workflow overview. The execution guide has the full implementation details.**
+
+---
+
+**This execute-task.md is now complete with full testing integration and references to the execution guide!** ✅🧪

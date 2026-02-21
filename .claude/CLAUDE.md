@@ -25,6 +25,39 @@ Building a complete e-commerce frontend with public shopping features and admin 
 
 ---
 
+
+## 🤖 For AI Agents: Task Execution System
+
+**CRITICAL:** Before executing any task, read this complete workflow guide:
+
+### **`.claude/AI-AGENT-EXECUTION-GUIDE.md`** ← READ THIS FIRST!
+
+This file contains the complete 10-step workflow for task execution including:
+- ✅ How to identify and read tasks
+- ✅ How to generate test scenarios
+- ✅ How to execute tests with Playwright
+- ✅ How to handle test failures
+- ✅ How to update systemTasks.md with test results
+- ✅ How to create documentation
+- ✅ How to track costs separately
+- ✅ Quality gates and standards
+- ✅ Critical rules (NEVER/ALWAYS)
+
+**Tasks cannot be marked complete without passing tests!**
+
+### Quick Reference
+
+When user says "execute task" or "/execute-task":
+
+1. **First:** Read `.claude/AI-AGENT-EXECUTION-GUIDE.md` for complete workflow
+2. **Then:** Read `.claude/CLAUDE.md` (this file) for project context
+3. **Then:** Read `.claude/tasks/systemTasks.md` to find next task
+4. **Then:** Follow the 10-step workflow from the guide exactly
+
+**DO NOT skip reading AI-AGENT-EXECUTION-GUIDE.md!** It contains critical instructions that ensure quality and consistency.
+
+---
+
 ## Backend Integration Rules
 
 ### API Communication
@@ -567,7 +600,6 @@ project-root/
 - Be concise but complete in responses
 
 ---
-
 ## Example Task Execution Session ✨ ENHANCED
 ```
 User: /execute-task
